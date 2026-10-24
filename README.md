@@ -1,17 +1,30 @@
-# StudySpace Notes Studio — full source code
+# StudySpace Notes Studio — Complete Rebuild
 
-## Files
-- `index.html` — app structure and controls
-- `style.css` — responsive dark UI styling
-- `app.js` — local note storage, highlight toggle/colors, pen canvas, undo/eraser, backup import/export
-- `manifest.webmanifest` — installable PWA metadata
-- `sw.js` — offline caching service worker
+A small, offline-ready study-notes PWA designed for tablets. The ZIP contents are at the repository root: upload the files directly, not an enclosing folder.
 
-## Test on your tablet
-Extract the ZIP and open `index.html` to test basic functions. Browser local-file mode may not support installing the PWA or service worker. To install and use offline through GitHub Pages, upload all files/folders to your repository root and wait for deployment. Open the HTTPS GitHub Pages URL once while online, then refresh and test offline.
+## Features
 
-## Important note storage warning
-Notes are stored in browser localStorage on this device. Export backups regularly. Clearing site data or uninstalling/clearing browser data can erase notes. This prototype uses a new storage key (`studyspace11201_data_v1`) and does not automatically merge into your existing StudySpace data. Back up existing notes before integrating.
+- **Mathematics is included by default** in the left-side subject list and is named **Mathematics** in English, **بیرکاری** in Kurdish, and **الرياضيات** in Arabic.
+- Three interface languages: Kurdish (Sorani), English, and Arabic. Kurdish and Arabic switch to RTL layout.
+- Typed notes with highlight colors and an always-visible number/symbol keyboard.
+- Dedicated Math workspace: question/equation field, symbol toolbar, working steps/answer field, and a live text preview.
+- Separate grid-paper handwriting canvas with pen color/size, eraser, undo, clear, touch/stylus pointer support, and stored strokes.
+- Auto-save to browser local storage, saved-notes list, custom subjects, import/export backup, PWA manifest, and offline service-worker cache.
+- No external JavaScript libraries, fonts, or network APIs are required for normal use.
 
+## Publish or update with GitHub Pages
 
-Math support: the default subject list now includes Math. The typed-note editor includes number buttons (0–9), arithmetic operators (+, −, ×, ÷, =), brackets, powers, square root, pi, percent, slash, and decimal point. Tap a button to insert it at the cursor, then press Save typed note. Back up your current notes before replacing files.
+1. Back up your existing repository files and export any notes from the existing app first.
+2. Extract this ZIP. The six source/support files and two icon files are directly at the ZIP root; do not upload a parent folder.
+3. Open the repository root on GitHub and upload `index.html`, `style.css`, `app.js`, `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png`, and `README.md` directly to it.
+4. Commit the changes and wait for GitHub Pages to finish publishing.
+5. On the tablet, open the published site in Chrome. Do a hard refresh or clear only the site's cached files if it is displaying an older cached version. Do not clear site storage unless your notes have been exported.
+6. Verify Mathematics appears at left, switch the language between all three options, create a test note, add a few equation symbols, write on the grid, reload, and confirm the test note remains.
+
+## Data safety
+
+This build uses a **new storage key** (`studyspace_notes_studio_rebuild_v3`) so it will not overwrite local data saved by an older StudySpace/Notes Studio version. Consequently, old-version notes do not automatically appear in this build. Export them from the old app before switching and retain the backup file. The app's Import Backup accepts this build's own export format; migration from older/custom schemas may need a manual conversion if the structures differ.
+
+## Basic local checks
+
+Run `node --check app.js` to verify JavaScript syntax. Service worker caching works on HTTPS (such as GitHub Pages) or localhost, not by opening `index.html` as a `file://` URL.
