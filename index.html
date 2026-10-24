@@ -1,72 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#05070b">
-<meta name="description" content="StudySpace — Grade 11–12 study notes">
-<title>StudySpace 11–12</title>
-<link rel="icon" href="icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<style>
-:root{color-scheme:dark;--bg:#05070b;--card:#0d111a;--ink:#f4f8ff;--muted:#9ba9bd;--accent:#1687ff;--line:#263448}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,sans-serif}
-header{padding:20px max(16px,calc((100% - 920px)/2));background:linear-gradient(120deg,#05070b,#10294a);color:white;border-bottom:1px solid #1687ff;box-shadow:0 8px 28px #1687ff22}
-header h1{margin:0;font-size:24px}header p{margin:5px 0 0;opacity:.9}
-main{max-width:920px;margin:0 auto;padding:16px;display:grid;gap:14px}
-.card{background:linear-gradient(145deg,#101722,#0a0e15);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 26px #0008}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.subjects{display:flex;gap:8px;flex-wrap:wrap}
-button,select,input{font:inherit}button,select,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px;background:#101722;color:var(--ink)}
-button{cursor:pointer}.subject{border-radius:999px}.subject.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 0 16px #1687ff55}
-input[type=text]{width:100%}.field{display:grid;gap:6px;margin:10px 0}.label{font-size:13px;color:var(--muted);font-weight:650}
-.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.toolbar button{padding:8px 10px}.editor{min-height:230px;border:1px solid var(--line);border-radius:12px;padding:14px;outline:none;line-height:1.7;background:#080c12;overflow-wrap:anywhere}.editor:focus{border-color:var(--accent)}.editor:empty:before{content:attr(data-placeholder);color:#999}
-.note{padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;cursor:pointer}.note strong{display:block}.note small{color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.primary{background:var(--accent);color:white;border-color:var(--accent)}.danger{color:#b42336}.hint{font-size:13px;color:var(--muted)}h2{font-size:18px;margin:0 0 10px}
-@media(min-width:760px){main{grid-template-columns:260px 1fr;align-items:start}.editorcard{grid-column:2}.subjectsCard{grid-column:1}.savedCard{grid-column:1;grid-row:2}}
-</style>
-</head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest"><title>StudySpace — Notes Studio</title>
+<link rel="stylesheet" href="style.css"></head>
 <body>
-<header><h1>StudySpace 11–12</h1><p>Your simple study notebook</p></header>
+<header><div><h1>StudySpace · Notes Studio</h1><small data-i18n="subtitle">Offline-ready demo · typed notes and pen notes are separate</small></div><div class="row" style="flex:0 1 auto"><label class="langpick"><span id="languageLabel">Language</span><select id="languageSelect" aria-label="Language"><option value="en">English</option><option value="ku">کوردی</option><option value="ar">العربية</option></select></label><button id="exportBtn" data-i18n="export">Export backup</button><button id="importBtn" data-i18n="import">Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div></header>
 <main>
-<section class="card subjectsCard"><h2>Subjects</h2><div class="subjects" id="subjects"></div><p class="hint">Choose a subject to create or find notes.</p></section>
-<section class="card savedCard"><h2>Saved notes</h2><input id="search" type="text" placeholder="Search notes…"><div id="notes"></div><div class="actions"><button id="backup">Export backup</button><button id="restoreBtn">Import backup</button><input id="restoreFile" type="file" accept=".json,application/json" hidden></div></section>
-<section class="card editorcard"><h2 id="editorTitle">New note</h2>
-<div class="field"><label class="label" for="title">Note title</label><input id="title" type="text" placeholder="e.g. Chapter 1 — Key ideas"></div>
-<div class="field"><label class="label" for="chapter">Chapter (optional)</label><input id="chapter" type="text" placeholder="Chapter or lesson"></div>
-<label class="label">Formatting</label>
-<div class="toolbar">
-<button type="button" data-cmd="bold"><b>B</b></button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="underline"><u>U</u></button>
-<select id="fontSize" aria-label="Text size"><option value="3">Normal size</option><option value="2">Small text</option><option value="4">Large text</option><option value="5">Extra large</option><option value="6">Heading</option></select>
-<label class="row" style="border:1px solid var(--line);border-radius:10px;padding:5px 8px">Text color <input id="textColor" type="color" value="#f4f8ff" style="width:32px;height:28px;border:0;padding:0;background:transparent"></label>
-<button type="button" id="numbered">1. Numbered list</button><button type="button" id="bullets">• Bullets</button>
-</div>
-<div id="content" class="editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Write your study notes here… Kurdish، عربي، English"></div>
-<div class="actions"><button class="primary" id="save">Save note</button><button id="new">New note</button><button class="danger" id="delete">Delete note</button></div>
-<p class="hint" id="status">Notes save in this browser on this device. Export a backup regularly; publishing updates does not upload your notes.</p>
-</section>
-</main>
-<script>
-const subjects=["Kurdish","Arabic","English","Economics","History","Philosophy","Computer","Religion","Geography"];
-const $=id=>document.getElementById(id);
-let data={notes:[]},subject=subjects[0],activeId=null;
-try{data=JSON.parse(localStorage.getItem("studyspace-simple-v1")||'{"notes":[]}')}catch(e){}
-function persist(){localStorage.setItem("studyspace-simple-v1",JSON.stringify(data));$("status").textContent="Saved on this device."}
-function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function renderSubjects(){let box=$("subjects");box.innerHTML="";subjects.forEach(s=>{let b=document.createElement("button");b.textContent=s;b.className="subject"+(s===subject?" active":"");b.onclick=()=>{subject=s;activeId=null;clearEditor();renderSubjects();renderNotes()};box.append(b)})}
-function current(){return data.notes.find(n=>n.id===activeId)}
-function clearEditor(){activeId=null;$("title").value="";$("chapter").value="";$("content").innerHTML="";$("editorTitle").textContent="New note"}
-function openNote(n){activeId=n.id;subject=n.subject;$("title").value=n.title;$("chapter").value=n.chapter||"";$("content").innerHTML=n.content||"";$("editorTitle").textContent="Edit note";renderSubjects();renderNotes();window.scrollTo({top:0,behavior:"smooth"})}
-function renderNotes(){let q=$("search").value.toLowerCase();let ns=data.notes.filter(n=>n.subject===subject&&[n.title,n.chapter,plain(n.content)].join(" ").toLowerCase().includes(q));$("notes").innerHTML="";if(!ns.length){$("notes").innerHTML='<p class="hint">No notes yet for '+esc(subject)+'.</p>';return}ns.forEach(n=>{let b=document.createElement("button");b.className="note";b.style.width="100%";b.style.textAlign="left";b.innerHTML="<strong>"+esc(n.title||"Untitled note")+"</strong><small>"+esc(n.chapter||subject)+"</small>";b.onclick=()=>openNote(n);$("notes").append(b)})}
-function plain(s){let d=document.createElement("div");d.innerHTML=s||"";return d.textContent||""}
-function save(){let n=current();if(!n){n={id:Date.now().toString(36)+Math.random().toString(36).slice(2),subject,title:"",chapter:"",content:""};data.notes.unshift(n);activeId=n.id}n.subject=subject;n.title=$("title").value.trim()||"Untitled note";n.chapter=$("chapter").value;n.content=$("content").innerHTML;persist();$("editorTitle").textContent="Edit note";renderNotes()}
-$("save").onclick=save;$("new").onclick=()=>{clearEditor();$("title").focus()};$("delete").onclick=()=>{if(!activeId)return;data.notes=data.notes.filter(n=>n.id!==activeId);persist();clearEditor();renderNotes()};
-$("search").addEventListener("input",renderNotes);
-document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>{ $("content").focus();document.execCommand(b.dataset.cmd,false,null)});
-$("numbered").onclick=()=>{ $("content").focus();document.execCommand("insertOrderedList",false,null)};
-$("bullets").onclick=()=>{ $("content").focus();document.execCommand("insertUnorderedList",false,null)};
-$("fontSize").onchange=e=>{ $("content").focus();document.execCommand("fontSize",false,e.target.value)};
-$("textColor").oninput=e=>{ $("content").focus();document.execCommand("foreColor",false,e.target.value)};
-$("backup").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="studyspace-backup.json";a.click();URL.revokeObjectURL(a.href)};
-$("restoreBtn").onclick=()=>$("restoreFile").click();$("restoreFile").onchange=async e=>{try{let obj=JSON.parse(await e.target.files[0].text());if(!Array.isArray(obj.notes))throw Error();data=obj;persist();renderNotes();alert("Backup imported.")}catch(err){alert("That backup file could not be read.")}};
-renderSubjects();renderNotes();
-</script>
-</body></html>
+<aside class="panel subjects"><h3 data-i18n="subjects">My subjects</h3><div id="subjectList"></div><button id="addSubject" data-i18n="addSubject">＋ Add subject</button><p class="warning"><span data-i18n="warningStorage">Notes are stored in this browser on this device. Export backups regularly. Clearing browser storage may erase them.</span></p></aside>
+<section class="panel"><div class="notehead"><input class="field" id="title" placeholder="Note title" data-i18n-placeholder="noteTitle"><select class="field" id="subject" style="max-width:190px"></select><button id="newNote" data-i18n="newNote">＋ New note</button></div>
+<div class="toolbar"><button id="typingTab" class="active" data-i18n="typedTab">⌨ Typed note</button><button id="penTab" data-i18n="penTab">✍ Pen note</button></div>
+<section id="typingPane"><div class="toolslabel" data-i18n="highlightTools">Highlight tools</div><div class="toolbar"><button id="highlightToggle" aria-pressed="false" data-i18n="highlightOff">🖍 Highlight: OFF</button><div class="colors" id="highlightColors"><button class="swatch selected" data-color="#ffe66d" style="background:#ffe66d" aria-label="Yellow"></button><button class="swatch" data-color="#83efb0" style="background:#83efb0" aria-label="Green"></button><button class="swatch" data-color="#75cfff" style="background:#75cfff" aria-label="Blue"></button><button class="swatch" data-color="#ff80b5" style="background:#ff80b5" aria-label="Pink"></button><button class="swatch" data-color="#c5a0ff" style="background:#c5a0ff" aria-label="Purple"></button></div><button id="removeHighlight" data-i18n="removeHighlight">Remove highlight</button></div><div class="mathtools"><div class="toolslabel" data-i18n="mathTools">Math &amp; number tools</div><div class="mathsymbols" id="mathSymbols"><button type="button" data-insert="0">0</button><button type="button" data-insert="1">1</button><button type="button" data-insert="2">2</button><button type="button" data-insert="3">3</button><button type="button" data-insert="4">4</button><button type="button" data-insert="5">5</button><button type="button" data-insert="6">6</button><button type="button" data-insert="7">7</button><button type="button" data-insert="8">8</button><button type="button" data-insert="9">9</button><button type="button" data-insert="+">+</button><button type="button" data-insert="−">−</button><button type="button" data-insert="×">×</button><button type="button" data-insert="÷">÷</button><button type="button" data-insert="=">=</button><button type="button" data-insert="(">(</button><button type="button" data-insert=")">)</button><button type="button" data-insert="²">x²</button><button type="button" data-insert="√">√</button><button type="button" data-insert="π">π</button><button type="button" data-insert="%">%</button><button type="button" data-insert="/">/</button><button type="button" data-insert=".">.</button></div><small data-i18n="mathHint">Tap a symbol to insert it into your note. You can also type numbers with your keyboard.</small></div><div id="typedEditor" class="editor" contenteditable="true" role="textbox" aria-label="Typed note" data-placeholder="Type your lesson or paste your notes here…" data-i18n-placeholder="editorPlaceholder"></div><div class="toolbar"><button id="saveTyped" data-i18n="saveTyped">Save typed note</button><button id="clearTyped" data-i18n="clearText">Clear text</button></div></section>
+<section id="penPane" class="hidden"><div class="toolslabel" data-i18n="penSeparate">Pen note (separate from typed note)</div><div class="toolbar"><button id="penMode" class="active" data-i18n="pen">✍ Pen</button><button id="eraserMode" data-i18n="eraser">⌫ Eraser</button><label class="row" style="align-items:center;flex:0 1 auto"><span data-i18n="color">Color</span> <input id="penColor" type="color" value="#172033" style="width:42px;height:38px"></label><label class="row" style="align-items:center;flex:0 1 auto"><span data-i18n="size">Size</span> <input id="penSize" type="range" min="1" max="18" value="4"></label><button id="clearCanvas" data-i18n="clearDrawing">Clear drawing</button></div><div class="canvaswrap"><canvas id="penCanvas" width="1200" height="680" aria-label="Draw handwritten notes here"></canvas></div><div class="toolbar"><button id="savePen" data-i18n="savePen">Save pen note</button><button id="undoPen" data-i18n="undo">Undo stroke</button></div><p class="warning"><span data-i18n="penWarning">Use your finger or stylus. Pen strokes save separately from typed text. For best results, keep the screen in portrait or landscape while drawing.</span></p></section>
+<div class="status" id="status" role="status"></div><hr style="border-color:var(--line);margin:16px 0"><h3 data-i18n="savedNotes">Saved notes</h3><div id="notesList"></div></section>
+</main><footer><span data-i18n="footer">Offline note prototype for StudySpace. Highlighting turns off when you tap the button again or switch away from the highlight tool. The app saves to this browser's local storage.</span></footer>
+<script src="app.js"></script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script></body></html>

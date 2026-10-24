@@ -1,26 +1,17 @@
-# StudySpace Notes — complete source
+# StudySpace Notes Studio — full source code
 
-A responsive, installable PWA-style study notebook for tablet and mobile. All project files are at the ZIP root.
+## Files
+- `index.html` — app structure and controls
+- `style.css` — responsive dark UI styling
+- `app.js` — local note storage, highlight toggle/colors, pen canvas, undo/eraser, backup import/export
+- `manifest.webmanifest` — installable PWA metadata
+- `sw.js` — offline caching service worker
 
-## Features
-- Subject list: کوردی، عەرەبی، ئینگلیزی، فەلسەفە، ئاین، ئابووری، مێژوو، بیرکاری، جوگرافیا
-- Kurdish, English, Arabic interface switch; Arabic RTL layout
-- Typed notes with bold, italic, bullets, numbered lists, to-do lines, font size, text color, and highlight color
-- Separate grid-paper pen canvas with color, thickness, eraser, undo, clear, and save
-- Autosave in browser local storage
-- JSON backup export/import
-- Basic service-worker caching for offline app shell
-- Responsive layout for tablet and phone
+## Test on your tablet
+Extract the ZIP and open `index.html` to test basic functions. Browser local-file mode may not support installing the PWA or service worker. To install and use offline through GitHub Pages, upload all files/folders to your repository root and wait for deployment. Open the HTTPS GitHub Pages URL once while online, then refresh and test offline.
 
-## Run locally
-Open `index.html` in a browser. For PWA/offline service-worker behavior, serve these files from a local web server or publish with HTTPS (for example GitHub Pages).
+## Important note storage warning
+Notes are stored in browser localStorage on this device. Export backups regularly. Clearing site data or uninstalling/clearing browser data can erase notes. This prototype uses a new storage key (`studyspace11201_data_v1`) and does not automatically merge into your existing StudySpace data. Back up existing notes before integrating.
 
-## Publish to GitHub Pages
-1. Back up your current repository and export existing notes before replacing files.
-2. Extract this ZIP.
-3. Upload the contents directly into the repository root (not an extra nested folder).
-4. Commit changes and wait for Pages to finish publishing.
-5. Reload the website. If an older app shell remains cached, close the installed PWA and refresh the website; the service worker cache name is `studyspace-notes-v1`.
 
-## Important data note
-This project uses localStorage key `studyspace-notetaking-v1`. It does not automatically import data from other StudySpace prototypes or sync notes across devices. Use Backup/Restore to move data manually. Restoring a backup replaces the current data after confirmation.
+Math support: the default subject list now includes Math. The typed-note editor includes number buttons (0–9), arithmetic operators (+, −, ×, ÷, =), brackets, powers, square root, pi, percent, slash, and decimal point. Tap a button to insert it at the cursor, then press Save typed note. Back up your current notes before replacing files.
