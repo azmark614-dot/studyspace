@@ -34,6 +34,22 @@ h1{letter-spacing:-.35px}.stats{gap:12px}.stat,.panel{backdrop-filter:blur(16px)
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
 </style>
+
+<style>
+/* Light mode uses the same pink identity with bright, readable surfaces. */
+:root[data-theme="light"]{color-scheme:light;--bg:#fff4fa;--card:rgba(255,255,255,.96);--ink:#321b2a;--muted:#785f70;--line:#efc7dd;--accent:#e83e91;--accentbg:#ffe0ef;--shadow:0 8px 24px rgba(120,48,88,.12)}
+:root[data-theme="light"] body{background-image:linear-gradient(rgba(255,244,250,.80),rgba(255,244,250,.88)),url("abstract-pink.svg")}
+:root[data-theme="light"] .stat{background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(255,235,246,.96))}
+:root[data-theme="light"] .stat strong{color:#c92879}
+:root[data-theme="light"] .noteitem{background:rgba(255,255,255,.94)}
+:root[data-theme="light"] .rich-editor{background:rgba(255,255,255,.95)}
+:root[data-theme="light"] .subject.active{background:linear-gradient(100deg,rgba(255,92,168,.18),rgba(164,76,194,.10));border-color:#e83e91}
+:root[data-theme="light"] .ai-card{background:#fff7fb;color:#321b2a;border-color:#efc7dd}
+.study-mask{background:var(--accentbg);color:transparent!important;border-radius:5px;padding:0 5px;cursor:pointer;box-shadow:inset 0 0 0 1px var(--accent)}
+.study-mask::selection{color:transparent}
+.study-mask.revealed{color:inherit!important;background:transparent;box-shadow:none;padding:0}
+</style>
+
 </head>
 <body><div id="launchScreen" aria-label="Loading StudySpace"><div class="launch-logo">📚</div><div class="launch-title">StudySpace Pink</div><div class="launch-sub">Your Grade 11–12 study space</div><div class="launch-bar"></div></div><main class="wrap">
 <header class="top"><div class="brand"><div class="logo">📚</div><div><h1>StudySpace Pink</h1><div class="muted">Your personal study desk · Grade 11–12</div></div></div><div class="toptools"><select id="themeMode" class="chip" aria-label="Theme"><option value="system">System theme</option><option value="light">Light</option><option value="dark">Dark</option></select><button class="btn" id="customBgBtn">🎨 Background</button><input type="color" id="customBg" value="#11101a" hidden><button class="btn" id="exportPdf">📄 Export PDF</button><button class="btn" id="aiOpen">✨ AI Assistant</button><button class="btn" id="backup">⬇ Backup</button><button class="btn" id="restoreBtn">⬆ Restore</button><input type="file" id="restoreFile" accept=".json,application/json" hidden></div></header>
@@ -53,6 +69,8 @@ h1{letter-spacing:-.35px}.stats{gap:12px}.stat,.panel{backdrop-filter:blur(16px)
 <select id="fontSize" class="btn toolselect" aria-label="Text size"><option value="3">Normal</option><option value="2">Small</option><option value="4">Large</option><option value="5">Extra large</option><option value="6">Title</option></select>
 <label class="btn row" style="gap:5px;padding:5px 8px">Text <input id="textColor" type="color" value="#19223c" aria-label="Text color" style="width:30px;padding:0;border:0;height:28px"></label>
 <button type="button" class="btn" id="highlight">🖍 Highlight</button>
+<button type="button" class="btn" id="maskSelected">🙈 Hide / reveal</button>
+<button type="button" class="btn" id="revealAll">👁 Reveal all</button>
 <button type="button" class="btn" id="stickersToggle">✨ Stickers</button>
 <button type="button" class="btn" id="clearFormat">Clear format</button>
 </div>
@@ -96,8 +114,9 @@ $('clearFormat').addEventListener('click',()=>{ $('content').focus(); document.e
 
 // Appearance settings: follow device, or choose light/dark and a custom background.
 const root=document.documentElement;
-function applyTheme(){let mode=localStorage.getItem('studyspace-theme')||'dark';$('themeMode').value=mode;root.dataset.theme=mode;let bg=localStorage.getItem('studyspace-custom-bg');if(bg){root.style.setProperty('--bg',bg);$('customBg').value=bg}}
+function applyTheme(){let mode=localStorage.getItem('studyspace-theme')||'dark';$('themeMode').value=mode;let resolved=mode==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):mode;root.dataset.theme=resolved;let bg=localStorage.getItem('studyspace-custom-bg');if(bg){root.style.setProperty('--bg',bg);$('customBg').value=bg}}
 $('themeMode').addEventListener('change',()=>{localStorage.setItem('studyspace-theme',$('themeMode').value);applyTheme()});
+if(window.matchMedia){const systemTheme=window.matchMedia('(prefers-color-scheme: light)');if(systemTheme.addEventListener)systemTheme.addEventListener('change',()=>{if((localStorage.getItem('studyspace-theme')||'dark')==='system')applyTheme()})}
 $('customBgBtn').onclick=()=>$('customBg').click();
 $('customBg').addEventListener('input',e=>{root.style.setProperty('--bg',e.target.value);localStorage.setItem('studyspace-custom-bg',e.target.value)});
 applyTheme();
@@ -128,26 +147,34 @@ $('new').onclick=create;$('first').onclick=create;$('search').oninput=renderNote
 $('save').onclick=()=>{update();saveDrawing();msg('Note saved on this device.')};
 $('delete').onclick=()=>{if(!note()||!confirm('Delete this note from this device?'))return;data.notes=data.notes.filter(n=>n.id!==active);active=null;persist();renderNotes();show(null);msg('Note deleted.')};
 $('backup').onclick=()=>{saveDrawing();let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='StudySpace-11-12-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);msg('Backup exported. Keep the JSON file safe.')};
-$('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{try{let f=e.target.files[0];if(!f)return;let d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!confirm('Replace current notes with this backup?'))return;data=d;active=null;persist();
-// PDF export: opens the Android/browser print dialog; choose Save as PDF.
+$('restoreBtn').onclick=()=>$('restoreFile').click();
+$('restoreFile').onchange=async e=>{try{let f=e.target.files[0];if(!f)return;let d=JSON.parse(await f.text());if(!Array.isArray(d.notes))throw new Error('Invalid backup');if(!confirm('Replace current notes with this backup?'))return;data=d;active=null;persist();renderSubjects();renderNotes();show(null);msg('Backup restored.')}catch(e){msg('Unable to read that backup file.')}e.target.value=''};
+
+// PDF export opens the browser print dialog; choose Save as PDF.
 $('exportPdf').onclick=()=>{let n=note();if(!n){msg('Open a note first, then export it as PDF.');return}saveDrawing();const oldTitle=document.title;document.title=(n.title||'StudySpace-Notes').replace(/[^a-z0-9 _-]/gi,'').slice(0,80)||'StudySpace-Notes';window.print();setTimeout(()=>document.title=oldTitle,1200)};
-// Study assistant builds a prompt from the current note and hands off to ChatGPT.
-$('aiOpen').onclick=()=>{$('aiModal').classList.remove('hidden');buildAIPrompt()};$('aiClose').onclick=()=>$('aiModal').classList.add('hidden');$('aiModal').addEventListener('click',e=>{if(e.target===$('aiModal'))$('aiModal').classList.add('hidden')});
-function buildAIPrompt(){let n=note();let title=n?.title||'Untitled study note';let chapter=n?.chapter||'';let textContent=n?.content?new DOMParser().parseFromString(n.content,'text/html').body.innerText:'';let task=$('aiTask').value;let lang=$('aiLanguage').value;$('aiPrompt').value=`You are my patient Grade 11–12 study assistant. ${task}
-Answer language: ${lang}.
-Subject: ${n?name(n.subject):'Please ask me which subject'}
-Title: ${title}
-Chapter/topic: ${chapter}
 
-My notes:
-${textContent||'(No note text found. Ask me to paste my lesson.)'}
-
-Keep the explanation accurate, organized, and suitable for exam revision. Do not invent facts; point out anything unclear.`}
+// Study assistant prepares a prompt based on the current note and opens ChatGPT.
+$('aiOpen').onclick=()=>{$('aiModal').classList.remove('hidden');buildAIPrompt()};
+$('aiClose').onclick=()=>$('aiModal').classList.add('hidden');
+$('aiModal').addEventListener('click',e=>{if(e.target===$('aiModal'))$('aiModal').classList.add('hidden')});
+function buildAIPrompt(){let n=note();let title=n?.title||'Untitled study note';let chapter=n?.chapter||'';let textContent=n?.content?new DOMParser().parseFromString(n.content,'text/html').body.innerText:'';let task=$('aiTask').value;let lang=$('aiLanguage').value;$('aiPrompt').value=`You are my patient Grade 11–12 study assistant. ${task}\nAnswer language: ${lang}.\nSubject: ${n?name(n.subject):'Please ask me which subject'}\nTitle: ${title}\nChapter/topic: ${chapter}\n\nMy notes:\n${textContent||'(No note text found. Ask me to paste my lesson.)'}\n\nKeep the explanation accurate, organized, and suitable for exam revision. Do not invent facts; point out anything unclear.`}
 $('aiBuild').onclick=buildAIPrompt;$('aiTask').onchange=buildAIPrompt;$('aiLanguage').onchange=buildAIPrompt;
 $('aiCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('aiPrompt').value);msg('AI prompt copied. Paste it into ChatGPT.')}catch(e){$('aiPrompt').focus();$('aiPrompt').select();msg('Select and copy the prompt, then paste it into ChatGPT.')}};
 $('aiChat').onclick=()=>{buildAIPrompt();try{navigator.clipboard.writeText($('aiPrompt').value)}catch(e){}window.open('https://chatgpt.com/','_blank','noopener');msg('ChatGPT opened. Paste your study prompt into the chat.')};
 
-renderSubjects();renderNotes();show(null);msg('Backup restored.')}catch(e){msg('Unable to read that backup file.')}e.target.value=''};
+// Hide selected words for active recall; tap a masked phrase to reveal it.
+$('maskSelected').addEventListener('click',()=>{
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0||sel.isCollapsed||!$('content').contains(sel.anchorNode)){msg('Select a word or phrase in your note first.');return}
+  const range=sel.getRangeAt(0);
+  if(!$('content').contains(range.commonAncestorContainer)){msg('Select text inside your note first.');return}
+  const span=document.createElement('span');span.className='study-mask';span.title='Tap to reveal';
+  try{range.surroundContents(span)}catch(e){const fragment=range.extractContents();span.appendChild(fragment);range.insertNode(span)}
+  sel.removeAllRanges();update();msg('Hidden for self-testing. Tap the covered text to reveal it.');
+});
+$('content').addEventListener('click',e=>{const span=e.target.closest('.study-mask');if(span&&$('content').contains(span)){span.classList.toggle('revealed');span.title=span.classList.contains('revealed')?'Tap to hide':'Tap to reveal';update()}});
+$('revealAll').addEventListener('click',()=>{document.querySelectorAll('#content .study-mask').forEach(s=>s.classList.add('revealed'));update();msg('All hidden words revealed.')});
+
 const c=$('pad'),ctx=c.getContext('2d');function loadDrawing(src){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);if(src){let im=new Image();im.onload=()=>ctx.drawImage(im,0,0,c.width,c.height);im.src=src}}
 function saveDrawing(){let n=note();if(!n)return;try{n.drawing=c.toDataURL('image/png');persist()}catch(e){msg('Drawing could not be saved. Export a backup.')}}
 function point(e){let r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}
@@ -158,24 +185,6 @@ $('pen').onclick=()=>{tool='pen';$('pen').className='btn primary';$('eraser').cl
 $('clear').onclick=()=>{if(!confirm('Clear the drawing?'))return;ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);saveDrawing()};
 $('png').onclick=()=>{if(!note())return;let a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=(note().title||'math-notes')+'.png';a.click()};
 function resize(){let n=note();if(!n)return;let r=c.getBoundingClientRect();let dpr=window.devicePixelRatio||1;let old=n.drawing;c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr);ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);if(old){let im=new Image();im.onload=()=>ctx.drawImage(im,0,0,c.width,c.height);im.src=old}}
-
-// PDF export: opens the Android/browser print dialog; choose Save as PDF.
-$('exportPdf').onclick=()=>{let n=note();if(!n){msg('Open a note first, then export it as PDF.');return}saveDrawing();const oldTitle=document.title;document.title=(n.title||'StudySpace-Notes').replace(/[^a-z0-9 _-]/gi,'').slice(0,80)||'StudySpace-Notes';window.print();setTimeout(()=>document.title=oldTitle,1200)};
-// Study assistant builds a prompt from the current note and hands off to ChatGPT.
-$('aiOpen').onclick=()=>{$('aiModal').classList.remove('hidden');buildAIPrompt()};$('aiClose').onclick=()=>$('aiModal').classList.add('hidden');$('aiModal').addEventListener('click',e=>{if(e.target===$('aiModal'))$('aiModal').classList.add('hidden')});
-function buildAIPrompt(){let n=note();let title=n?.title||'Untitled study note';let chapter=n?.chapter||'';let textContent=n?.content?new DOMParser().parseFromString(n.content,'text/html').body.innerText:'';let task=$('aiTask').value;let lang=$('aiLanguage').value;$('aiPrompt').value=`You are my patient Grade 11–12 study assistant. ${task}
-Answer language: ${lang}.
-Subject: ${n?name(n.subject):'Please ask me which subject'}
-Title: ${title}
-Chapter/topic: ${chapter}
-
-My notes:
-${textContent||'(No note text found. Ask me to paste my lesson.)'}
-
-Keep the explanation accurate, organized, and suitable for exam revision. Do not invent facts; point out anything unclear.`}
-$('aiBuild').onclick=buildAIPrompt;$('aiTask').onchange=buildAIPrompt;$('aiLanguage').onchange=buildAIPrompt;
-$('aiCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('aiPrompt').value);msg('AI prompt copied. Paste it into ChatGPT.')}catch(e){$('aiPrompt').focus();$('aiPrompt').select();msg('Select and copy the prompt, then paste it into ChatGPT.')}};
-$('aiChat').onclick=()=>{buildAIPrompt();try{navigator.clipboard.writeText($('aiPrompt').value)}catch(e){}window.open('https://chatgpt.com/','_blank','noopener');msg('ChatGPT opened. Paste your study prompt into the chat.')};
 
 renderSubjects();renderNotes();show(null);
 window.setTimeout(()=>document.getElementById('launchScreen')?.classList.add('gone'),1050);

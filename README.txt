@@ -1,16 +1,17 @@
-STUDYSPACE PINK — PDF EXPORT + AI ASSISTANT
+StudySpace Pink — FINAL CHECKED PACKAGE
 
-Features added:
-- Export the current note to PDF using your browser print dialog. Choose “Save as PDF”.
-- AI Assistant builds a prompt from the current note, with options for explanation, exam questions, summaries, flashcards, quizzes, and vocabulary. It opens ChatGPT so you can paste the prompt. This app does not contain a private AI API key and does not generate AI answers by itself.
+Files: index.html, manifest.webmanifest, sw.js, icon.svg, abstract-pink.svg.
 
-UPLOAD TO GITHUB PAGES
-1. Extract this ZIP.
-2. Open https://github.com/azmark614-dot/studyspace
-3. Choose Add file → Upload files.
-4. Upload/replace all files in this folder (index.html, manifest.webmanifest, sw.js, icon.svg, abstract-pink.svg).
-5. Commit to main.
-6. Open https://azmark614-dot.github.io/studyspace/ and refresh.
+Features in this package:
+- Dark and light theme (plus system preference)
+- Pink abstract background and custom background color option
+- Nine subjects and note editor with formatting, lists, highlights, tags, stickers, attachments, and handwriting pad
+- Hide/reveal selected words and reveal-all
+- Export current note using the browser print dialog (choose Save as PDF)
+- Backup and restore notes as JSON
+- AI study prompt generator that opens ChatGPT (not a built-in private AI API)
+- App icon, launch screen, web manifest, and service worker for installability
 
-IMPORTANT
-Back up notes before replacing versions. Notes are saved in browser local storage on this device and do not automatically sync to other devices. For PDF export, open a note and tap Export PDF, then choose Save as PDF in the print dialog.
+Upload: Extract this ZIP. In the GitHub repository root, upload all five files (not the ZIP), then commit to main. Do not delete other repository files unless instructed.
+
+Important: Back up notes first. Notes are stored locally in the browser/device and do not automatically sync. Existing notes from a different older app version may not automatically appear.

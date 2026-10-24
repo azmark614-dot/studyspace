@@ -1,4 +1,4 @@
-const CACHE='studyspace-pink-redesign-v2';
+const CACHE='studyspace-pink-final-v3';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg','./abstract-pink.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
