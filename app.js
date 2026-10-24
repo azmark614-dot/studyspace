@@ -59,7 +59,7 @@ function renderAll(){
 }
 function setMode(m){
  mode=m;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
- $("textEditorWrap").hidden=m!=="text";$("paperTools").hidden=m!=="paper";$("canvasWrap").hidden=m!=="paper";$("mathSymbols").hidden=m!=="text";
+ $("textEditorWrap").hidden=m!=="text";$("paperTools").hidden=m!=="paper";$("canvasWrap").hidden=m!=="paper";$("mathSymbols").hidden=false;
  if(m==="paper")resizeCanvas();
 }
 function resizeCanvas(){
@@ -91,6 +91,21 @@ function pointerMove(e){
 function pointerUp(){if(!drawing)return;drawing=false;lastPoint=null;saveEditor()}
 function eraseAt(p){const n=activeNote();if(!n)return;const radius=Number($("penWidth").value)*2+8;n.strokes=(n.strokes||[]).filter(s=>!s.points.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<radius));drawStrokes(n.strokes)}
 function initSymbols(){const box=$("mathSymbols");symbols.forEach(sym=>{const b=document.createElement("button");b.textContent=sym;b.onclick=()=>{const el=$("noteBody"),start=el.selectionStart,end=el.selectionEnd;el.setRangeText(sym,start,end,"end");el.focus();queueSave();};box.appendChild(b);});}
+const mathTemplates = {
+ problem: "Math problem\\nQuestion: \\n\\nGiven: \\n\\nFind: \\n\\nSolution: \\n\\nAnswer: \\n",
+ steps: "Step-by-step solution\\n1. Given: \\n2. Rule/formula: \\n3. Substitute values: \\n4. Calculate: \\n5. Final answer: \\n",
+ formula: "Formula card\\nFormula: \\nMeaning of symbols: \\nWhen to use it: \\nExample: \\n",
+ practice: "Math practice\\n1) Question: \\n   Answer: \\n\\n2) Question: \\n   Answer: \\n\\n3) Question: \\n   Answer: \\n"
+};
+document.querySelectorAll("[data-math-template]").forEach(b=>b.onclick=()=>{
+ const body=$("noteBody");
+ if(!activeNote()) newNote();
+ const current=$("noteBody").value;
+ const addition=mathTemplates[b.dataset.mathTemplate];
+ body.value=current ? current+"\\n\\n"+addition : addition;
+ if(!$("noteTitle").value.trim()) $("noteTitle").value=({problem:"Math problem",steps:"Step-by-step solution",formula:"Formula card",practice:"Math practice"})[b.dataset.mathTemplate];
+ queueSave(); body.focus(); toast("Math template added to your note.");
+});
 $("newNoteBtn").onclick=newNote;
 $("addSubjectBtn").onclick=()=>{const name=prompt("ناوی بابەت بنووسە:");if(!name?.trim())return;const id="s"+Date.now();state.subjects.push({id,name:name.trim(),icon:"📚"});selectedSubject=id;state.selectedSubject=id;persist();renderAll();};
 $("noteTitle").addEventListener("input",queueSave);$("noteBody").addEventListener("input",queueSave);
@@ -107,7 +122,7 @@ $("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({...state,export
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.subjects)||!Array.isArray(data.notes))throw Error("invalid");if(!confirm("Restore backup? Current app data will be replaced."))return;state={subjects:data.subjects,notes:data.notes,theme:data.theme||"light",language:data.language||"ku",selectedSubject:data.selectedSubject||data.subjects[0]?.id};selectedSubject=state.selectedSubject||"ku";document.body.classList.toggle("dark",state.theme==="dark");currentNoteId=null;persist();renderAll();toast("Backup restored.");}catch{toast("Backup file is invalid or damaged.");}e.target.value="";};
 canvas.addEventListener("pointerdown",pointerDown);canvas.addEventListener("pointermove",pointerMove);canvas.addEventListener("pointerup",pointerUp);canvas.addEventListener("pointercancel",pointerUp);window.addEventListener("resize",()=>{if(mode==="paper")resizeCanvas();});
-document.body.classList.toggle("dark",state.theme==="dark");initSymbols();
+document.body.classList.toggle("dark",state.theme==="dark");
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
 if(!state.subjects?.length)state.subjects=defaultSubjects;
 if(!state.notes?.length){const n={id:"welcome",subjectId:"ku",title:"تێبینی نموونە",body:"ئەمە تێبینییەکی نموونەیە. دەتوانیت دەستکاری بکەیت یان تێبینییەکی نوێ دروست بکەیت.",strokes:[],updated:Date.now()};state.notes.push(n);}
