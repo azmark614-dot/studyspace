@@ -31,3 +31,15 @@ A Progressive Web App (PWA) normally must be served from an HTTPS website to ins
 
 ## Updating the app
 Upload the replacement files to the same repository. Reopen the website while online. If the old version remains, close and reopen Chrome or clear the site's cached files only after exporting your notes.
+
+
+MODERN UPDATE
+Includes system/light/dark theme choices, a custom background color, multiple highlight colors,
+emoji stickers, colored tags, and attachments for photos/files (up to 4 MB each). Attachments are
+stored locally in browser storage and included in JSON backups. Keep backups safe; there is no
+automatic cloud sync. To update an existing GitHub Pages repository, upload index.html and sw.js
+from this folder and commit the changes. Do not upload the ZIP itself.
+
+
+PINK ABSTRACT EDITION
+This customized edition opens in Dark mode with a pink accent and an abstract image background (abstract-pink.svg). Keep abstract-pink.svg in the same repository folder as index.html. To publish, upload all files from this ZIP to the repository root and commit changes. Back up your notes before clearing browser data; this app stores notes locally and does not auto-sync.
