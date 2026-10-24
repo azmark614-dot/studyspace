@@ -2,129 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f766e">
-  <meta name="description" content="StudySpace — multilingual study notes with math tools and pen-first handwriting.">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#18243b">
+  <meta name="description" content="StudySpace notes with typing, pen writing, subjects, lists, highlighting, and offline support.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon-192.png" type="image/png">
   <link rel="stylesheet" href="style.css">
-  <title>StudySpace Notes Studio</title>
+  <title>StudySpace Notes</title>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="StudySpace home">
-      <span class="brand-mark">S</span>
-      <span><strong>StudySpace</strong><small data-i18n="subtitle">Your study space</small></span>
-    </a>
+    <div class="brand"><div class="brand-mark">S</div><div><strong>StudySpace</strong><small id="subtitle">Your study notebook</small></div></div>
     <div class="top-actions">
-      <label class="language-control"><span data-i18n="language">Language</span>
-        <select id="languageSelect" aria-label="Language">
-          <option value="en">English</option><option value="ku">کوردی</option><option value="ar">العربية</option>
-        </select>
-      </label>
-      <button class="button ghost" id="exportBtn" data-i18n="export">Export backup</button>
-      <button class="button ghost" id="importBtn" data-i18n="import">Import backup</button>
-      <input id="importFile" type="file" accept="application/json,.json" hidden>
+      <select id="language" aria-label="Language">
+        <option value="ku">کوردی</option><option value="en">English</option><option value="ar">العربية</option>
+      </select>
+      <button id="backupExport" class="quiet" title="Export backup">↗ <span data-i18n="backup">Backup</span></button>
+      <label class="quiet import-label">↙ <span data-i18n="restore">Restore</span><input id="backupImport" type="file" accept="application/json" hidden></label>
     </div>
   </header>
-
-  <main class="app-shell">
-    <aside class="sidebar card">
-      <div class="sidebar-heading"><h2 data-i18n="subjects">Subjects</h2><span class="small-pill" id="subjectCount">10</span></div>
-      <nav id="subjectList" class="subject-list" aria-label="Subjects"></nav>
-      <button class="button secondary full" id="addSubject"><span aria-hidden="true">＋</span> <span data-i18n="addSubject">Add subject</span></button>
-      <div class="sidebar-tip"><span class="tip-icon">↗</span><p data-i18n="storageTip">Your notes stay on this device. Export a backup regularly.</p></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-heading"><span data-i18n="subjects">Subjects</span><button id="addSubject" class="icon-button" aria-label="Add subject">＋</button></div>
+      <nav id="subjectList" aria-label="Subjects"></nav>
+      <div class="sidebar-foot"><span class="save-dot"></span><span id="saveStatus" data-i18n="saved">Saved on this device</span></div>
     </aside>
-
-    <section class="workspace">
-      <section class="card note-card">
-        <div class="note-heading">
-          <div class="note-title-group">
-            <p class="eyebrow" id="currentSubjectLabel">MATHEMATICS</p>
-            <input id="noteTitle" class="title-input" type="text" data-i18n-placeholder="noteTitlePlaceholder" placeholder="Give this note a title" maxlength="180" aria-label="Note title">
-          </div>
-          <div class="note-actions">
-            <button class="button ghost" id="newNote"><span aria-hidden="true">＋</span> <span data-i18n="newNote">New note</span></button>
-            <span class="save-indicator" id="saveIndicator"><span class="save-dot"></span><span data-i18n="saved">Saved</span></span>
-          </div>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="Note workspace">
-          <button class="tab active" role="tab" id="tabTyped" aria-controls="paneTyped" aria-selected="true" data-i18n="typedTab">⌨ Typed notes</button>
-          <button class="tab" role="tab" id="tabMath" aria-controls="paneMath" aria-selected="false" data-i18n="mathTab">∑ Math workspace</button>
-          <button class="tab" role="tab" id="tabPen" aria-controls="panePen" aria-selected="false" data-i18n="penTab">✍ Handwriting</button>
-        </div>
-
-        <section class="pane" id="paneTyped" role="tabpanel" aria-labelledby="tabTyped">
-          <div class="section-heading"><div><h2 data-i18n="typedHeading">Typed notes</h2><p data-i18n="typedDescription">Write lessons and organize key points.</p></div></div>
-          <div class="highlight-toolbar">
-            <button class="button highlight-toggle" id="highlightToggle" aria-pressed="false" data-i18n="highlightOff">🖍 Highlight: OFF</button>
-            <div class="swatches" aria-label="Highlight color">
-              <button class="swatch selected" data-highlight="#ffe66d" style="--swatch:#ffe66d" aria-label="Yellow"></button>
-              <button class="swatch" data-highlight="#91efb7" style="--swatch:#91efb7" aria-label="Green"></button>
-              <button class="swatch" data-highlight="#8fd8ff" style="--swatch:#8fd8ff" aria-label="Blue"></button>
-              <button class="swatch" data-highlight="#ff9bc4" style="--swatch:#ff9bc4" aria-label="Pink"></button>
-              <button class="swatch" data-highlight="#cbb0ff" style="--swatch:#cbb0ff" aria-label="Purple"></button>
-            </div>
-            <button class="button ghost small-button" id="removeHighlight" data-i18n="removeHighlight">Remove highlight</button>
-          </div>
-          <div class="math-symbol-block">
-            <div class="symbol-title"><strong data-i18n="symbols">Number &amp; symbol keyboard</strong><span data-i18n="symbolsHint">Tap to insert at the cursor</span></div>
-            <div id="quickSymbols" class="symbol-grid">
-              <button data-insert="0">0</button><button data-insert="1">1</button><button data-insert="2">2</button><button data-insert="3">3</button><button data-insert="4">4</button><button data-insert="5">5</button><button data-insert="6">6</button><button data-insert="7">7</button><button data-insert="8">8</button><button data-insert="9">9</button>
-              <button data-insert=" + ">＋</button><button data-insert=" − ">−</button><button data-insert=" × ">×</button><button data-insert=" ÷ ">÷</button><button data-insert=" = ">＝</button><button data-insert="²">x²</button><button data-insert="√()">√</button><button data-insert="π">π</button>
-            </div>
-          </div>
-          <div id="typedEditor" class="rich-editor" contenteditable="true" role="textbox" aria-multiline="true" data-i18n-placeholder="typedPlaceholder" data-placeholder="Start typing here…" aria-label="Typed notes"></div>
-          <div class="pane-footer"><span data-i18n="autosaveHint">Your changes save automatically on this device.</span><button class="button primary" id="saveTyped" data-i18n="saveNow">Save now</button></div>
+    <main class="main">
+      <div class="subject-heading">
+        <div><p class="eyebrow" data-i18n="notebook">STUDY NOTEBOOK</p><h1 id="subjectTitle">کوردی</h1></div>
+        <button id="newNote" class="primary">＋ <span data-i18n="newNote">New note</span></button>
+      </div>
+      <div class="note-layout">
+        <section class="notes-panel">
+          <div class="notes-title"><strong data-i18n="myNotes">My notes</strong><span id="noteCount" class="count">0</span></div>
+          <div id="notesList" class="notes-list"></div>
         </section>
-
-        <section class="pane hidden" id="paneMath" role="tabpanel" aria-labelledby="tabMath">
-          <div class="section-heading"><div><h2 data-i18n="mathHeading">Math workspace</h2><p data-i18n="mathDescription">Type the question, add your working, or solve it by hand in the handwriting tab.</p></div><span class="math-badge">∑</span></div>
-          <label class="input-label" for="mathQuestion" data-i18n="questionLabel">Question / equation</label>
-          <textarea id="mathQuestion" class="math-input" rows="3" data-i18n-placeholder="questionPlaceholder" placeholder="Example: (2x + 4) / 3 = 6"></textarea>
-          <div class="symbol-title math-symbol-heading"><strong data-i18n="equationTools">Equation tools</strong><span data-i18n="tapInsert">Tap a button to insert into the focused field</span></div>
-          <div id="equationSymbols" class="symbol-grid equation-grid">
-            <button data-insert="0">0</button><button data-insert="1">1</button><button data-insert="2">2</button><button data-insert="3">3</button><button data-insert="4">4</button><button data-insert="5">5</button><button data-insert="6">6</button><button data-insert="7">7</button><button data-insert="8">8</button><button data-insert="9">9</button>
-            <button data-insert=" + ">＋</button><button data-insert=" − ">−</button><button data-insert=" × ">×</button><button data-insert=" ÷ ">÷</button><button data-insert=" = ">＝</button><button data-insert="( )">( )</button><button data-insert="²">x²</button><button data-insert="³">x³</button><button data-insert="√()">√</button><button data-insert="π">π</button><button data-insert="^">xʸ</button><button data-insert="□/□">a/b</button><button data-insert="%">%</button><button data-insert="." >.</button><button data-insert="
-">↵</button><button data-insert=" ← " data-action="backspace">⌫</button>
+        <section class="editor-panel">
+          <input id="noteTitle" class="note-title-input" placeholder="Note title..." maxlength="160" aria-label="Note title">
+          <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="type">⌨ <span data-i18n="typing">Typing</span></button>
+            <button class="mode-tab" data-mode="pen">✎ <span data-i18n="penPaper">Pen paper</span></button>
           </div>
-          <label class="input-label solution-label" for="mathWorking" data-i18n="workingLabel">Working steps / answer</label>
-          <textarea id="mathWorking" class="math-input working-input" rows="6" data-i18n-placeholder="workingPlaceholder" placeholder="1. First step…&#10;2. Next step…&#10;Final answer:"></textarea>
-          <div class="math-preview-wrap"><div class="preview-label" data-i18n="previewLabel">Live text preview</div><div class="math-preview" id="mathPreview">Your equation will appear here.</div></div>
-          <div class="pane-footer"><span data-i18n="mathSaveHint">Question and working are saved with this note.</span><button class="button primary" id="saveMath" data-i18n="saveMath">Save maths</button></div>
-        </section>
-
-        <section class="pane hidden" id="panePen" role="tabpanel" aria-labelledby="tabPen">
-          <div class="section-heading"><div><h2 data-i18n="penHeading">Handwriting workspace</h2><p data-i18n="penDescription">A grid-paper canvas designed for stylus and finger writing.</p></div><span class="pen-badge">✍</span></div>
-          <div class="pen-toolbar">
-            <button class="button tool active" id="penMode" data-i18n="penTool">✍ Pen</button>
-            <button class="button tool" id="eraserMode" data-i18n="eraserTool">⌫ Eraser</button>
-            <label class="control-label"><span data-i18n="inkColor">Ink</span><input id="penColor" type="color" value="#1d2b4f" aria-label="Pen color"></label>
-            <label class="control-label size-control"><span data-i18n="penSize">Size</span><input id="penSize" type="range" min="1" max="14" step="1" value="3" aria-label="Pen thickness"><output id="penSizeOutput">3</output></label>
-            <button class="button ghost" id="undoPen" data-i18n="undo">Undo</button>
-            <button class="button ghost" id="clearCanvas" data-i18n="clearCanvas">Clear page</button>
+          <div id="typingTools" class="toolbar">
+            <button data-command="bold" title="Bold"><b>B</b></button>
+            <button data-command="italic" title="Italic"><i>I</i></button>
+            <button data-command="insertUnorderedList" title="Bullet list">• <span data-i18n="bullets">Bullets</span></button>
+            <button data-command="insertOrderedList" title="Numbered list">1. <span data-i18n="numbers">Numbers</span></button>
+            <button id="todoButton" title="Checklist">☑ <span data-i18n="todo">To-do</span></button>
+            <label class="tool-select" title="Font size">A <select id="fontSize" aria-label="Font size"><option value="2">Small</option><option value="3" selected>Normal</option><option value="4">Large</option><option value="5">XL</option><option value="6">XXL</option></select></label>
+            <label class="tool-color" title="Text color">A <input type="color" id="textColor" value="#26344b" aria-label="Text color"></label>
+            <label class="tool-color" title="Highlight color">▰ <input type="color" id="highlightColor" value="#ffeb75" aria-label="Highlight color"></label>
+            <button id="highlightButton" title="Highlight selection">▰ <span data-i18n="highlight">Highlight</span></button>
+            <button id="clearFormat" title="Remove formatting">Tx</button>
           </div>
-          <div class="canvas-shell"><canvas id="penCanvas" aria-label="Grid paper: write with your stylus or finger"></canvas></div>
-          <div class="pen-footer"><span data-i18n="penAutosave">Strokes save automatically. Use Undo to remove the last stroke.</span><button class="button primary" id="savePen" data-i18n="saveDrawing">Save handwriting</button></div>
-          <p class="pen-note" data-i18n="penTip">Tip: for precise writing, use your stylus and rest your palm outside the canvas. The canvas keeps handwriting separate from typed notes.</p>
+          <div id="typingArea" class="typing-area" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" data-placeholder="Write your notes here..."></div>
+          <div id="penTools" class="pen-toolbar hidden">
+            <label>✎ <span data-i18n="penColor">Pen</span> <input type="color" id="penColor" value="#20345b"></label>
+            <label>↔ <span data-i18n="size">Size</span> <input id="penSize" type="range" min="1" max="14" value="3"></label>
+            <button id="eraserButton">⌫ <span data-i18n="eraser">Eraser</span></button>
+            <button id="undoButton">↶ <span data-i18n="undo">Undo</span></button>
+            <button id="clearCanvas">✕ <span data-i18n="clear">Clear</span></button>
+            <button id="saveDrawing" class="primary">✓ <span data-i18n="saveDrawing">Save drawing</span></button>
+          </div>
+          <div id="penArea" class="pen-area hidden">
+            <div class="paper-label" data-i18n="paperTip">Write with your stylus or finger on the grid paper.</div>
+            <canvas id="drawingCanvas" aria-label="Handwriting canvas"></canvas>
+          </div>
+          <div class="editor-footer"><span id="wordCount">0 words</span><span data-i18n="autoSave">Auto-saves on this device</span></div>
         </section>
-
-        <div class="status-line" id="statusLine" role="status" aria-live="polite"></div>
-      </section>
-
-      <section class="card saved-card">
-        <div class="saved-heading"><div><h2 data-i18n="savedNotes">Saved notes</h2><p data-i18n="savedDescription">Open an existing note or remove one you no longer need.</p></div><span class="small-pill" id="noteCount">0</span></div>
-        <div id="notesList" class="notes-list"></div>
-      </section>
-    </section>
-  </main>
-  <footer class="site-footer"><span>StudySpace Notes Studio</span><span data-i18n="footerNote">Offline-ready · Kurdish, English, Arabic · Local notes and backup controls</span></footer>
+      </div>
+    </main>
+  </div>
+  <dialog id="subjectDialog">
+    <form method="dialog" id="subjectForm">
+      <h2 data-i18n="addSubject">Add a subject</h2>
+      <input id="subjectName" maxlength="50" placeholder="Subject name" required>
+      <div class="dialog-actions"><button value="cancel" class="quiet" data-i18n="cancel">Cancel</button><button id="confirmSubject" value="default" class="primary" data-i18n="add">Add</button></div>
+    </form>
+  </dialog>
+  <dialog id="noteDialog">
+    <form method="dialog">
+      <h2 data-i18n="newNote">New note</h2><p data-i18n="newNotePrompt">Create a note for the selected subject?</p>
+      <div class="dialog-actions"><button value="cancel" class="quiet" data-i18n="cancel">Cancel</button><button id="confirmNewNote" value="default" class="primary" data-i18n="create">Create</button></div>
+    </form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-    }
-  </script>
 </body>
 </html>
