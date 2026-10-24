@@ -1,19 +1,14 @@
 {
-  "name": "StudySpace 11–12",
+  "id": "./",
+  "name": "StudySpace Pink — Grade 11–12",
   "short_name": "StudySpace",
-  "description": "Your personal Grade 11–12 study notebook",
+  "description": "A dark pink abstract study notebook for Grade 11–12 students.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#f5f6fb",
-  "theme_color": "#e83e8c",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#170d19",
+  "theme_color": "#170d19",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }
