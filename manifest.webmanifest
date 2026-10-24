@@ -1,0 +1,19 @@
+{
+  "name": "StudySpace 11–12",
+  "short_name": "StudySpace",
+  "description": "Your personal Grade 11–12 study notebook",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f6fb",
+  "theme_color": "#243b80",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
