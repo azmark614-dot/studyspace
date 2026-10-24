@@ -4,3 +4,6 @@
 .langpick{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;flex:0 1 auto}.langpick select{max-width:125px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text)}
 
 .mathtools{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.mathsymbols{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.mathsymbols button{min-width:42px;padding:8px 10px;font-size:16px;font-weight:600}.mathtools small{display:block;color:var(--muted);line-height:1.5}
+
+/* Math-friendly paper and improved highlight controls */
+:root{--accent:#4d8dff}button{transition:background .15s,border-color .15s}button:hover{border-color:var(--accent)}.paperhint{background:#202d46;border:1px solid #40557a;border-radius:10px;padding:10px;color:#dbe8ff;font-size:13px}.canvaswrap{border:1px solid #cbd8e8;box-shadow:inset 0 0 0 1px #ffffff}.canvaswrap canvas{background:#fffef8}.colorpick{border:1px solid var(--line);border-radius:10px;padding:3px 8px;color:var(--muted);font-size:13px}.mathtools{background:#101a2e}.mathsymbols button{background:#243653;border-color:#405b81;min-width:40px}
