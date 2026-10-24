@@ -12,3 +12,6 @@ Extract the ZIP and open `index.html` to test basic functions. Browser local-fil
 
 ## Important note storage warning
 Notes are stored in browser localStorage on this device. Export backups regularly. Clearing site data or uninstalling/clearing browser data can erase notes. This prototype uses a new storage key (`studyspace11201_data_v1`) and does not automatically merge into your existing StudySpace data. Back up existing notes before integrating.
+
+
+Math support: the default subject list now includes Math. The typed-note editor includes number buttons (0–9), arithmetic operators (+, −, ×, ÷, =), brackets, powers, square root, pi, percent, slash, and decimal point. Tap a button to insert it at the cursor, then press Save typed note. Back up your current notes before replacing files.
