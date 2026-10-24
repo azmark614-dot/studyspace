@@ -9,24 +9,23 @@
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{color-scheme:dark;--bg:#05070b;--card:#0d111a;--ink:#f4f8ff;--muted:#9ba9bd;--accent:#1687ff;--line:#263448;--surface:#101722;--editor:#080c12;--header1:#05070b;--header2:#10294a}
-:root[data-theme="light"]{color-scheme:light;--bg:#f4f7fb;--card:#ffffff;--ink:#111827;--muted:#5b6778;--accent:#0878e8;--line:#d7e0eb;--surface:#f8fbff;--editor:#ffffff;--header1:#ffffff;--header2:#e6f2ff}
+:root{color-scheme:dark;--bg:#05070b;--card:#0d111a;--ink:#f4f8ff;--muted:#9ba9bd;--accent:#1687ff;--line:#263448}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,sans-serif}
-header{padding:20px max(16px,calc((100% - 920px)/2));background:linear-gradient(120deg,var(--header1),var(--header2));color:white;border-bottom:1px solid #1687ff;box-shadow:0 8px 28px #1687ff22}
-header h1{margin:0;font-size:24px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header #themeToggle{background:var(--surface);color:var(--ink);border-color:var(--accent)}header p{margin:5px 0 0;opacity:.9}
+header{padding:20px max(16px,calc((100% - 920px)/2));background:linear-gradient(120deg,#05070b,#10294a);color:white;border-bottom:1px solid #1687ff;box-shadow:0 8px 28px #1687ff22}
+header h1{margin:0;font-size:24px}header p{margin:5px 0 0;opacity:.9}
 main{max-width:920px;margin:0 auto;padding:16px;display:grid;gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 26px #0008}
+.card{background:linear-gradient(145deg,#101722,#0a0e15);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 26px #0008}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.subjects{display:flex;gap:8px;flex-wrap:wrap}
-button,select,input{font:inherit}button,select,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink)}
+button,select,input{font:inherit}button,select,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px;background:#101722;color:var(--ink)}
 button{cursor:pointer}.subject{border-radius:999px}.subject.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 0 16px #1687ff55}
 input[type=text]{width:100%}.field{display:grid;gap:6px;margin:10px 0}.label{font-size:13px;color:var(--muted);font-weight:650}
-.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.toolbar button{padding:8px 10px}.editor{min-height:230px;border:1px solid var(--line);border-radius:12px;padding:14px;outline:none;line-height:1.7;background:var(--editor);overflow-wrap:anywhere}.editor:focus{border-color:var(--accent)}.editor:empty:before{content:attr(data-placeholder);color:#999}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.toolbar button{padding:8px 10px}.editor{min-height:230px;border:1px solid var(--line);border-radius:12px;padding:14px;outline:none;line-height:1.7;background:#080c12;overflow-wrap:anywhere}.editor:focus{border-color:var(--accent)}.editor:empty:before{content:attr(data-placeholder);color:#999}
 .note{padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;cursor:pointer}.note strong{display:block}.note small{color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.primary{background:var(--accent);color:white;border-color:var(--accent)}.danger{color:#b42336}.hint{font-size:13px;color:var(--muted)}h2{font-size:18px;margin:0 0 10px}
 @media(min-width:760px){main{grid-template-columns:260px 1fr;align-items:start}.editorcard{grid-column:2}.subjectsCard{grid-column:1}.savedCard{grid-column:1;grid-row:2}}
 </style>
 </head>
 <body>
-<header><div class="topbar"><div><h1>StudySpace 11–12</h1><p>Your simple study notebook</p></div><button id="themeToggle" type="button" aria-label="Switch color theme">☀️ Light mode</button></div></header>
+<header><h1>StudySpace 11–12</h1><p>Your simple study notebook</p></header>
 <main>
 <section class="card subjectsCard"><h2>Subjects</h2><div class="subjects" id="subjects"></div><p class="hint">Choose a subject to create or find notes.</p></section>
 <section class="card savedCard"><h2>Saved notes</h2><input id="search" type="text" placeholder="Search notes…"><div id="notes"></div><div class="actions"><button id="backup">Export backup</button><button id="restoreBtn">Import backup</button><input id="restoreFile" type="file" accept=".json,application/json" hidden></div></section>
@@ -49,9 +48,6 @@ input[type=text]{width:100%}.field{display:grid;gap:6px;margin:10px 0}.label{fon
 const subjects=["Kurdish","Arabic","English","Economics","History","Philosophy","Computer","Religion","Geography"];
 const $=id=>document.getElementById(id);
 let data={notes:[]},subject=subjects[0],activeId=null;
-const themeKey="studyspace-theme-v1";
-function setTheme(theme){document.documentElement.dataset.theme=theme;const light=theme==="light";document.querySelector("meta[name=theme-color]").content=light?"#f4f7fb":"#05070b";$ ("themeToggle").textContent=light?"🌙 Dark mode":"☀️ Light mode";localStorage.setItem(themeKey,theme)}
-let savedTheme="dark";try{savedTheme=localStorage.getItem(themeKey)||"dark"}catch(e){};document.documentElement.dataset.theme=savedTheme;
 try{data=JSON.parse(localStorage.getItem("studyspace-simple-v1")||'{"notes":[]}')}catch(e){}
 function persist(){localStorage.setItem("studyspace-simple-v1",JSON.stringify(data));$("status").textContent="Saved on this device."}
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -71,8 +67,6 @@ $("fontSize").onchange=e=>{ $("content").focus();document.execCommand("fontSize"
 $("textColor").oninput=e=>{ $("content").focus();document.execCommand("foreColor",false,e.target.value)};
 $("backup").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="studyspace-backup.json";a.click();URL.revokeObjectURL(a.href)};
 $("restoreBtn").onclick=()=>$("restoreFile").click();$("restoreFile").onchange=async e=>{try{let obj=JSON.parse(await e.target.files[0].text());if(!Array.isArray(obj.notes))throw Error();data=obj;persist();renderNotes();alert("Backup imported.")}catch(err){alert("That backup file could not be read.")}};
-$("themeToggle").onclick=()=>setTheme(document.documentElement.dataset.theme==="light"?"dark":"light");
-setTheme(savedTheme);
 renderSubjects();renderNotes();
 </script>
 </body></html>
