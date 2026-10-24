@@ -1,9 +1,9 @@
 {
-  "name": "StudySpace Notes Studio",
+  "name": "StudySpace",
   "short_name": "StudySpace",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#111827",
-  "description": "Offline typed notes, color highlighting, and separate pen notes."
+  "background_color": "#f4f6fb",
+  "theme_color": "#111d36",
+  "description": "Personal school notes and math notebook"
 }

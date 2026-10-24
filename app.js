@@ -1,39 +1,115 @@
-
-(()=>{'use strict';
-const KEY='studyspace11201_data_v1'; const DEFAULT_SUBJECTS=['Kurdish','Arabic','English','Economics','History','Philosophy','Computer','Religion','Geography','Math'];
-let data={subjects:DEFAULT_SUBJECTS.slice(),notes:[],activeId:null};let highlightOn=false,highlightColor='#ffe66d',drawMode='pen',strokes=[],currentStroke=null;
-const $=id=>document.getElementById(id);const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const translations={
- en:{language:'Language',subtitle:'Offline-ready demo · typed notes and pen notes are separate',export:'Export backup',import:'Import backup',subjects:'My subjects',addSubject:'＋ Add subject',warningStorage:'Notes are stored in this browser on this device. Export backups regularly. Clearing browser storage may erase them.',noteTitle:'Note title',newNote:'＋ New note',typedTab:'⌨ Typed note',penTab:'✍ Pen note',highlightTools:'Highlight tools',highlightOn:'🖍 Highlight: ON',highlightOff:'🖍 Highlight: OFF',removeHighlight:'Remove highlight',mathTools:'Math & number tools',mathHint:'Tap a symbol to insert it into your note. You can also type numbers with your keyboard.',editorPlaceholder:'Type your lesson or paste your notes here…',saveTyped:'Save typed note',clearText:'Clear text',penSeparate:'Pen note (separate from typed note)',pen:'✍ Pen',eraser:'⌫ Eraser',color:'Color',size:'Size',clearDrawing:'Clear drawing',savePen:'Save pen note',undo:'Undo stroke',penWarning:'Use your finger or stylus. Pen strokes save separately from typed text. For best results, keep the screen in portrait or landscape while drawing.',savedNotes:'Saved notes',footer:"Offline note prototype for StudySpace. Highlighting turns off when you tap the button again or switch away from the highlight tool. The app saves to this browser's local storage.",noNotes:'No saved notes for this subject yet.',delete:'Delete',untitled:'Untitled note',storageSaved:'Saved on this device.',saveFail:'Could not save. Export a backup or free browser storage.',removeHint:t('removeHint'),deleted:'Note deleted.',created:'New note created.',opened:'Note opened.',penSaved:'Pen note saved separately.',typedSaved:'Typed note saved.',subjectPrompt:'New subject name:',subjectAdded:'Subject added.',deleteConfirm:'Delete this note?',clearTextConfirm:'Clear the typed note text?',clearPenConfirm:'Clear the whole pen drawing?',backupConfirm:'Replace current StudySpace data with this backup? Export a backup first if needed.',invalidBackup:'Could not import this backup file.',general:'General'},
- ku:{language:'زمان',subtitle:'نموونەی ئۆفلاین · تێبینیی نووسراو و تێبینیی قەڵەم جیاوازن',export:'هەناردەکردنی پاشەکەوت',import:'هاوردەکردنی پاشەکەوت',subjects:'بابەتەکانم',addSubject:'＋ زیادکردنی بابەت',warningStorage:'تێبینییەکان لەم وێبگەڕە و ئامێرەدا پاشەکەوت دەکرێن. بەردەوام پاشەکەوت هەناردە بکە.',noteTitle:'ناونیشانی تێبینی',newNote:'＋ تێبینیی نوێ',typedTab:'⌨ تێبینیی نووسراو',penTab:'✍ تێبینیی قەڵەم',highlightTools:'ئامرازەکانی هایلایت',highlightOn:'🖍 هایلایت: چالاک',highlightOff:'🖍 هایلایت: ناچالاک',removeHighlight:'لابردنی هایلایت',mathTools:'ئامرازەکانی بیرکاری و ژمارە',mathHint:'لەسەر هێماکە دابگرە تاکو لە تێبینییەکەت دابنرێت. دەتوانیت ژمارەکان بە کیبۆردیش بنووسیت.',editorPlaceholder:'وانەکەت بنووسە یان تێبینییەکانت لێرە دابنێ…',saveTyped:'پاشەکەوتکردنی تێبینی',clearText:'سڕینەوەی دەق',penSeparate:'تێبینیی قەڵەم (جیا لە دەق)',pen:'✍ قەڵەم',eraser:'⌫ سڕەرەوە',color:'ڕەنگ',size:'قەبارە',clearDrawing:'سڕینەوەی وێنەکێشان',savePen:'پاشەکەوتکردنی تێبینیی قەڵەم',undo:'گەڕانەوەی هێڵ',penWarning:'بە پەنجە یان قەڵەمی زیرەک بنووسە. هێڵەکانی قەڵەم جیا پاشەکەوت دەکرێن.',savedNotes:'تێبینییە پاشەکەوتکراوەکان',footer:'نموونەی تێبینیی ئۆفلاین بۆ StudySpace. ئەپەکە لە بیرگەی ئەم وێبگەڕەدا پاشەکەوت دەکات.',noNotes:'هێشتا هیچ تێبینییەک بۆ ئەم بابەتە پاشەکەوت نەکراوە.',delete:'سڕینەوە',untitled:'تێبینیی بێ ناونیشان',storageSaved:'لەسەر ئەم ئامێرە پاشەکەوت کرا.',saveFail:'پاشەکەوت نەکرا. پاشەکەوت هەناردە بکە.',removeHint:'سەرەتا دەقی هایلایتکراو هەڵبژێرە، پاشان لابردنی هایلایت دابگرە.',deleted:'تێبینی سڕایەوە.',created:'تێبینیی نوێ دروست کرا.',opened:'تێبینی کرایەوە.',penSaved:'تێبینیی قەڵەم بە جیا پاشەکەوت کرا.',typedSaved:'تێبینی پاشەکەوت کرا.',subjectPrompt:'ناوی بابەتی نوێ:',subjectAdded:'بابەت زیاد کرا.',deleteConfirm:'ئەم تێبینییە بسڕدرێتەوە؟',clearTextConfirm:'دەقی تێبینی بسڕدرێتەوە؟',clearPenConfirm:'هەموو وێنەکێشانەکە بسڕدرێتەوە؟',backupConfirm:'داتای ئێستای StudySpace بگۆڕدرێت بەو پاشەکەوتە؟',invalidBackup:'نەتوانرا ئەم پاشەکەوتە هاوردە بکرێت.',general:'گشتی'},
- ar:{language:'اللغة',subtitle:'نسخة تعمل دون إنترنت · الملاحظات المكتوبة وملاحظات القلم منفصلة',export:'تصدير نسخة احتياطية',import:'استيراد نسخة احتياطية',subjects:'موادي',addSubject:'＋ إضافة مادة',warningStorage:'تُحفظ الملاحظات في هذا المتصفح على هذا الجهاز. صدّر نسخة احتياطية بانتظام.',noteTitle:'عنوان الملاحظة',newNote:'＋ ملاحظة جديدة',typedTab:'⌨ ملاحظة مكتوبة',penTab:'✍ ملاحظة بالقلم',highlightTools:'أدوات التمييز',highlightOn:'🖍 التمييز: تشغيل',highlightOff:'🖍 التمييز: إيقاف',removeHighlight:'إزالة التمييز',mathTools:'أدوات الرياضيات والأرقام',mathHint:'اضغط على الرمز لإضافته إلى ملاحظتك. يمكنك أيضًا كتابة الأرقام باستخدام لوحة المفاتيح.',editorPlaceholder:'اكتب الدرس أو الصق ملاحظاتك هنا…',saveTyped:'حفظ الملاحظة المكتوبة',clearText:'مسح النص',penSeparate:'ملاحظة بالقلم (منفصلة عن النص)',pen:'✍ قلم',eraser:'⌫ ممحاة',color:'اللون',size:'الحجم',clearDrawing:'مسح الرسم',savePen:'حفظ ملاحظة القلم',undo:'تراجع عن الخط',penWarning:'استخدم إصبعك أو القلم. تُحفظ ضربات القلم منفصلة عن النص المكتوب.',savedNotes:'الملاحظات المحفوظة',footer:'نموذج ملاحظات يعمل دون إنترنت لـ StudySpace. تُحفظ البيانات في مساحة التخزين المحلية للمتصفح.',noNotes:'لا توجد ملاحظات محفوظة لهذه المادة بعد.',delete:'حذف',untitled:'ملاحظة بلا عنوان',storageSaved:'تم الحفظ على هذا الجهاز.',saveFail:'تعذر الحفظ. صدّر نسخة احتياطية أو أفرغ مساحة التخزين.',removeHint:'حدد النص المميز أولاً ثم اضغط إزالة التمييز.',deleted:'تم حذف الملاحظة.',created:'تم إنشاء ملاحظة جديدة.',opened:'تم فتح الملاحظة.',penSaved:'تم حفظ ملاحظة القلم بشكل منفصل.',typedSaved:'تم حفظ الملاحظة المكتوبة.',subjectPrompt:'اسم المادة الجديدة:',subjectAdded:'تمت إضافة المادة.',deleteConfirm:'هل تريد حذف هذه الملاحظة؟',clearTextConfirm:'هل تريد مسح نص الملاحظة؟',clearPenConfirm:'هل تريد مسح الرسم بالكامل؟',backupConfirm:'هل تريد استبدال بيانات StudySpace الحالية بهذه النسخة الاحتياطية؟',invalidBackup:'تعذر استيراد ملف النسخة الاحتياطية.',general:'عام'}
-};
-let language=localStorage.getItem('studyspace_language')||'en';function t(k){return (translations[language]||translations.en)[k]||translations.en[k]||k}function applyLanguage(){document.documentElement.lang=language;document.documentElement.dir=language==='ar'?'rtl':(language==='ku'?'rtl':'ltr');$('languageSelect').value=language;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;el.textContent=t(k)});document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));$('languageLabel').textContent=t('language');setHighlight(highlightOn);renderNotes()};$('languageSelect').addEventListener('change',e=>{language=e.target.value;localStorage.setItem('studyspace_language',language);applyLanguage()});
-
-function safeLoad(){try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);if(d&&Array.isArray(d.notes)){data={subjects:Array.isArray(d.subjects)?d.subjects:DEFAULT_SUBJECTS.slice(),notes:d.notes,activeId:d.activeId||null};if(!data.subjects.some(s=>String(s).toLowerCase()==='math'))data.subjects.push('Math')}}}catch(e){console.warn(e)}}
-function persist(msg='Saved on this device.'){try{localStorage.setItem(KEY,JSON.stringify(data));$('status').textContent=msg}catch(e){$('status').textContent='Could not save. Export a backup or free browser storage.'}}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function active(){return data.notes.find(n=>n.id===data.activeId)}
-function renderSubjects(){ $('subjectList').innerHTML='';$('subject').innerHTML='';data.subjects.forEach(s=>{const b=document.createElement('button');b.textContent='📘 '+s;b.onclick=()=>{ $('subject').value=s;renderNotes()};$('subjectList').append(b);const o=document.createElement('option');o.value=s;o.textContent=s;$('subject').append(o)});if(!data.subjects.length){$('subject').innerHTML='<option>General</option>'}}
-function renderNotes(){const list=$('notesList');list.innerHTML='';const filtered=data.notes.filter(n=>!$('subject').value||n.subject===$('subject').value);if(!filtered.length){list.innerHTML='<p class="muted">'+esc(t('noNotes'))+'</p>';return}filtered.slice().reverse().forEach(n=>{const row=document.createElement('div');row.className='noteitem';const open=document.createElement('button');open.textContent=(n.penData?'✍ ':'📝 ')+(n.title||t('untitled'));open.onclick=()=>loadNote(n.id);const del=document.createElement('button');del.textContent=t('delete');del.onclick=()=>{if(confirm(t('deleteConfirm'))){data.notes=data.notes.filter(x=>x.id!==n.id);if(data.activeId===n.id)data.activeId=null;persist('Note deleted.');renderNotes();if(!active())newNote()}};row.append(open,del);list.append(row)})}
-function newNote(){const n={id:uid(),title:'',subject:$('subject').value||data.subjects[0]||'General',typedHtml:'',penData:'',updated:Date.now()};data.notes.push(n);data.activeId=n.id;$('title').value='';$('typedEditor').innerHTML='';strokes=[];paintCanvas();persist(t('created'));renderNotes()}
-function loadNote(id){const n=data.notes.find(x=>x.id===id);if(!n)return;data.activeId=id;$('title').value=n.title||'';$('subject').value=n.subject||data.subjects[0];$('typedEditor').innerHTML=n.typedHtml||'';try{strokes=n.penData?JSON.parse(n.penData):[]}catch(e){strokes=[]}paintCanvas();persist(t('opened'));renderNotes()}
-function saveActive(which){let n=active();if(!n){newNote();n=active()}n.title=$('title').value;n.subject=$('subject').value||'General';n.updated=Date.now();if(which==='typed')n.typedHtml=$('typedEditor').innerHTML;if(which==='pen')n.penData=JSON.stringify(strokes);persist(which==='pen'?t('penSaved'):t('typedSaved'));renderNotes()}
-function setHighlight(on){highlightOn=on;$('highlightToggle').classList.toggle('active',on);$('highlightToggle').textContent=on?t('highlightOn'):t('highlightOff');$('highlightToggle').setAttribute('aria-pressed',String(on));$('typedEditor').style.cursor=on?'text':'auto';}
-$('highlightToggle').onclick=()=>setHighlight(!highlightOn);
-$('highlightColorPicker').addEventListener('input',e=>{highlightColor=e.target.value;$('highlightColors').querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));if(highlightOn)applyHighlight()});
-$('highlightColors').querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{highlightColor=b.dataset.color;$('highlightColors').querySelectorAll('.swatch').forEach(x=>x.classList.toggle('selected',x===b));if(highlightOn)applyHighlight()});
-function applyHighlight(){const sel=getSelection();if(!sel||sel.rangeCount===0||sel.isCollapsed)return;const range=sel.getRangeAt(0);if(!$('typedEditor').contains(range.commonAncestorContainer))return;try{const mark=document.createElement('mark');mark.style.backgroundColor=highlightColor;range.surroundContents(mark);sel.removeAllRanges();saveActive('typed')}catch(e){document.execCommand('hiliteColor',false,highlightColor);saveActive('typed')}}
-$('typedEditor').addEventListener('mouseup',()=>{if(highlightOn)setTimeout(applyHighlight,0)});$('typedEditor').addEventListener('keyup',e=>{if(highlightOn&&e.shiftKey)setTimeout(applyHighlight,0)});$('typedEditor').addEventListener('input',()=>{if(!highlightOn)saveActive('typed')});
-$('removeHighlight').onclick=()=>{const sel=getSelection();if(sel&&sel.rangeCount&&!sel.isCollapsed){const range=sel.getRangeAt(0);const node=range.commonAncestorContainer;const root=node.nodeType===1?node:node.parentElement;const marks=(root.closest&&root.closest('mark'))?[root.closest('mark')]:Array.from($('typedEditor').querySelectorAll('mark')).filter(m=>{try{return range.intersectsNode(m)}catch(e){return false}});marks.forEach(m=>{const p=m.parentNode;while(m.firstChild)p.insertBefore(m.firstChild,m);p.removeChild(m)});saveActive('typed')}else $('status').textContent=t('removeHint');setHighlight(false)};
-const mathButtons=document.querySelectorAll('#mathSymbols [data-insert]');mathButtons.forEach(btn=>btn.addEventListener('click',()=>{const editor=$('typedEditor');editor.focus();const value=btn.dataset.insert;const sel=window.getSelection();if(sel&&sel.rangeCount&&editor.contains(sel.anchorNode)){const range=sel.getRangeAt(0);range.deleteContents();const text=document.createTextNode(value);range.insertNode(text);range.setStartAfter(text);range.collapse(true);sel.removeAllRanges();sel.addRange(range)}else{editor.appendChild(document.createTextNode(value))}saveActive('typed')}));
-$('saveTyped').onclick=()=>{saveActive('typed');setHighlight(false)};$('clearTyped').onclick=()=>{if(confirm(t('clearTextConfirm'))){$('typedEditor').innerHTML='';saveActive('typed')}};
-$('typingTab').onclick=()=>{ $('typingPane').classList.remove('hidden');$('penPane').classList.add('hidden');$('typingTab').classList.add('active');$('penTab').classList.remove('active');setHighlight(false)};$('penTab').onclick=()=>{ $('penPane').classList.remove('hidden');$('typingPane').classList.add('hidden');$('penTab').classList.add('active');$('typingTab').classList.remove('active');setHighlight(false);resizeCanvas()};
-const canvas=$('penCanvas'),ctx=canvas.getContext('2d');function paintCanvas(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#fffef8';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.save();ctx.strokeStyle='#d9e6f7';ctx.lineWidth=1;const gap=Math.max(28,Math.round(canvas.width/30));for(let y=gap;y<canvas.height;y+=gap){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}ctx.strokeStyle='#f0b7b7';ctx.beginPath();ctx.moveTo(Math.round(canvas.width*.07),0);ctx.lineTo(Math.round(canvas.width*.07),canvas.height);ctx.stroke();ctx.restore();for(const s of strokes){if(!s.points||!s.points.length)continue;ctx.beginPath();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=s.mode==='erase'?'#ffffff':s.color;ctx.lineWidth=s.mode==='erase'?s.size*4:s.size;ctx.moveTo(s.points[0].x,s.points[0].y);for(let i=1;i<s.points.length;i++)ctx.lineTo(s.points[i].x,s.points[i].y);if(s.points.length===1){ctx.lineTo(s.points[0].x+.1,s.points[0].y+.1)}ctx.stroke()}}
-function resizeCanvas(){const old=document.createElement('canvas');old.width=canvas.width;old.height=canvas.height;old.getContext('2d').drawImage(canvas,0,0);const w=Math.max(600,Math.floor(canvas.clientWidth*2));canvas.width=w;canvas.height=Math.floor(w*680/1200);paintCanvas()}
-function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
-canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);currentStroke={mode:drawMode,color:$('penColor').value,size:Number($('penSize').value),points:[point(e)]};strokes.push(currentStroke);paintCanvas()});canvas.addEventListener('pointermove',e=>{if(!currentStroke)return;e.preventDefault();currentStroke.points.push(point(e));paintCanvas()});function endStroke(){if(currentStroke){currentStroke=null;saveActive('pen')}}canvas.addEventListener('pointerup',endStroke);canvas.addEventListener('pointercancel',endStroke);$('penMode').onclick=()=>{drawMode='pen';$('penMode').classList.add('active');$('eraserMode').classList.remove('active')};$('eraserMode').onclick=()=>{drawMode='erase';$('eraserMode').classList.add('active');$('penMode').classList.remove('active')};$('clearCanvas').onclick=()=>{if(confirm(t('clearPenConfirm'))){strokes=[];paintCanvas();saveActive('pen')}};$('undoPen').onclick=()=>{strokes.pop();paintCanvas();saveActive('pen')};$('savePen').onclick=()=>saveActive('pen');
-$('newNote').onclick=newNote;$('addSubject').onclick=()=>{const s=prompt(t('subjectPrompt'));if(s&&s.trim()&&!data.subjects.includes(s.trim())){data.subjects.push(s.trim());renderSubjects();$('subject').value=s.trim();persist(t('subjectAdded'))}};$('title').addEventListener('change',()=>{if(active()){active().title=$('title').value;persist();renderNotes()}});$('subject').addEventListener('change',()=>{if(active()){active().subject=$('subject').value;persist();renderNotes()}});
-$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='studyspace-backup.json';a.click();URL.revokeObjectURL(a.href)};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!Array.isArray(d.subjects))throw Error('Invalid backup');if(confirm(t('backupConfirm'))){data=d;persist('Backup imported.');renderSubjects();if(active())loadNote(active().id);else newNote();renderNotes()}}catch(err){alert(t('invalidBackup'))}};
-safeLoad();applyLanguage();renderSubjects();if(!data.subjects.length)data.subjects=DEFAULT_SUBJECTS.slice();if(data.activeId&&data.notes.some(n=>n.id===data.activeId))loadNote(data.activeId);else if(data.notes.length)loadNote(data.notes[data.notes.length-1].id);else newNote();renderNotes();window.addEventListener('resize',()=>{if(!$('penPane').classList.contains('hidden'))resizeCanvas()});
+(() => {
+const $ = id => document.getElementById(id);
+const defaultSubjects = [
+  {id:"ku", name:"کوردی", icon:"📘"},{id:"ar",name:"عەرەبی",icon:"📗"},
+  {id:"en",name:"ئینگلیزی",icon:"🔤"},{id:"ph",name:"فەلسەفە",icon:"💭"},
+  {id:"hi",name:"مێژوو",icon:"🏛️"},{id:"ec",name:"ئابووری",icon:"📊"},
+  {id:"re",name:"ئایین",icon:"📖"},{id:"co",name:"بیرکاری",icon:"➗"},
+  {id:"ge",name:"جۆگرافیا",icon:"🌍"},{id:"cs",name:"کۆمپیوتەر",icon:"💻"}
+];
+const symbols = ["＋","−","×","÷","=","≠","≈","≤","≥","√","π","²","³","(",")","∑","∞","%","x","y","θ","→"];
+let state = loadState();
+let selectedSubject = state.selectedSubject || "ku";
+let currentNoteId = null;
+let mode = "text";
+let drawTool = "pen";
+let drawing = false, lastPoint = null, undoStack = [];
+const canvas = $("paperCanvas"), ctx = canvas.getContext("2d");
+function loadState(){
+  try { return JSON.parse(localStorage.getItem("studyspace-data-v1")) || {subjects:defaultSubjects,notes:[],theme:"light",language:"ku"}; }
+  catch { return {subjects:defaultSubjects,notes:[],theme:"light",language:"ku"}; }
+}
+function persist(){
+  try { localStorage.setItem("studyspace-data-v1",JSON.stringify(state)); $("saveStatus").textContent="پاشەکەوت کراوە"; }
+  catch { $("saveStatus").textContent="هەڵە لە پاشەکەوت"; toast("پاشەکەوت نەکرا. تکایە backup بکە."); }
+}
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.hidden=true,2400);}
+function notesForSubject(){return state.notes.filter(n=>n.subjectId===selectedSubject)}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function renderSubjects(){
+ const grid=$("subjectsGrid");grid.innerHTML="";
+ state.subjects.forEach(s=>{const b=document.createElement("button");b.className="subject"+(s.id===selectedSubject?" selected":"");b.innerHTML=`<span class="emoji">${escapeHtml(s.icon)}</span><span>${escapeHtml(s.name)}</span><span class="arrow">›</span>`;b.onclick=()=>{selectedSubject=s.id;state.selectedSubject=s.id;currentNoteId=null;persist();renderAll();};grid.appendChild(b);});
+ $("selectedSubjectTitle").textContent=(state.subjects.find(s=>s.id===selectedSubject)||{}).name||"StudySpace";
+}
+function renderNotes(){
+ const list=$("notesList");list.innerHTML="";
+ const notes=notesForSubject();
+ if(!notes.length){const p=document.createElement("p");p.className="muted";p.textContent="هیچ تێبینییەک نییە. تێبینییەکی نوێ دروست بکە.";list.appendChild(p);}
+ notes.forEach(n=>{const b=document.createElement("button");b.className="note-card"+(n.id===currentNoteId?" active":"");b.innerHTML=`<strong>${escapeHtml(n.title||"تێبینی بێ ناونیشان")}</strong><div class="note-preview">${escapeHtml((n.body||"").slice(0,90)||"✎ قەڵەم و کاغەز")}</div>`;b.onclick=()=>openNote(n.id);list.appendChild(b);});
+}
+function activeNote(){return state.notes.find(n=>n.id===currentNoteId)}
+function newNote(){
+ const n={id:"n"+Date.now()+Math.random().toString(16).slice(2,6),subjectId:selectedSubject,title:"",body:"",strokes:[],updated:Date.now()};
+ state.notes.unshift(n);currentNoteId=n.id;persist();renderAll();$("noteTitle").focus();
+}
+function openNote(id){currentNoteId=id;renderAll();loadCanvas(activeNote()?.strokes||[]);}
+function saveEditor(){
+ const n=activeNote();if(!n)return;
+ n.title=$("noteTitle").value;n.body=$("noteBody").value;n.strokes=readCanvasStrokes();n.updated=Date.now();persist();renderNotes();
+}
+let saveTimer;
+function queueSave(){ $("saveStatus").textContent="خەریکی پاشەکەوتکردن…";clearTimeout(saveTimer);saveTimer=setTimeout(saveEditor,350);}
+function renderAll(){
+ renderSubjects();renderNotes();const n=activeNote();
+ $("noteTitle").value=n?.title||"";$("noteBody").value=n?.body||"";
+ $("deleteNoteBtn").disabled=!n;
+ if(n)loadCanvas(n.strokes||[]);else clearCanvas();
+}
+function setMode(m){
+ mode=m;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
+ $("textEditorWrap").hidden=m!=="text";$("paperTools").hidden=m!=="paper";$("canvasWrap").hidden=m!=="paper";$("mathSymbols").hidden=m!=="text";
+ if(m==="paper")resizeCanvas();
+}
+function resizeCanvas(){
+ const rect=canvas.getBoundingClientRect();if(!rect.width)return;
+ const old=readCanvasStrokes();const ratio=window.devicePixelRatio||1;
+ canvas.width=Math.round(rect.width*ratio);canvas.height=Math.round(420*ratio);
+ ctx.setTransform(ratio,0,0,ratio,0,0);drawStrokes(old);
+}
+function readCanvasStrokes(){return activeNote()?.strokes||[]}
+function clearCanvas(){ctx.clearRect(0,0,canvas.width,canvas.height)}
+function drawStrokes(strokes){
+ clearCanvas();const ratio=window.devicePixelRatio||1;ctx.save();ctx.setTransform(ratio,0,0,ratio,0,0);
+ for(const s of strokes){if(!s.points?.length)continue;ctx.beginPath();ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=s.width||4;ctx.strokeStyle=s.tool==="highlight"?s.color:(s.color||"#183c91");ctx.globalAlpha=s.tool==="highlight"?0.35:1;ctx.moveTo(s.points[0].x,s.points[0].y);for(let i=1;i<s.points.length;i++)ctx.lineTo(s.points[i].x,s.points[i].y);if(s.points.length===1)ctx.lineTo(s.points[0].x+.1,s.points[0].y+.1);ctx.stroke();}
+ ctx.restore();
+}
+function loadCanvas(strokes){if(!canvas)return;resizeCanvas();drawStrokes(strokes||[])}
+function pointFromEvent(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function pointerDown(e){
+ if(mode!=="paper"||!activeNote())return;drawing=true;canvas.setPointerCapture?.(e.pointerId);lastPoint=pointFromEvent(e);
+ const n=activeNote();n.strokes=n.strokes||[];undoStack.push(JSON.stringify(n.strokes));if(undoStack.length>30)undoStack.shift();
+ if(drawTool==="eraser"){eraseAt(lastPoint);return;}
+ n.strokes.push({tool:drawTool,color:drawTool==="highlight"?$("highlightColor").value:$("penColor").value,width:drawTool==="eraser"?18:Number($("penWidth").value),points:[lastPoint]});drawStrokes(n.strokes);
+}
+function pointerMove(e){
+ if(!drawing||!activeNote())return;const p=pointFromEvent(e),n=activeNote();
+ if(drawTool==="eraser"){eraseAt(p);return;}
+ const s=n.strokes[n.strokes.length-1];s.points.push(p);lastPoint=p;drawStrokes(n.strokes);
+}
+function pointerUp(){if(!drawing)return;drawing=false;lastPoint=null;saveEditor()}
+function eraseAt(p){const n=activeNote();if(!n)return;const radius=Number($("penWidth").value)*2+8;n.strokes=(n.strokes||[]).filter(s=>!s.points.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<radius));drawStrokes(n.strokes)}
+function initSymbols(){const box=$("mathSymbols");symbols.forEach(sym=>{const b=document.createElement("button");b.textContent=sym;b.onclick=()=>{const el=$("noteBody"),start=el.selectionStart,end=el.selectionEnd;el.setRangeText(sym,start,end,"end");el.focus();queueSave();};box.appendChild(b);});}
+$("newNoteBtn").onclick=newNote;
+$("addSubjectBtn").onclick=()=>{const name=prompt("ناوی بابەت بنووسە:");if(!name?.trim())return;const id="s"+Date.now();state.subjects.push({id,name:name.trim(),icon:"📚"});selectedSubject=id;state.selectedSubject=id;persist();renderAll();};
+$("noteTitle").addEventListener("input",queueSave);$("noteBody").addEventListener("input",queueSave);
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$("themeBtn").onclick=()=>{document.body.classList.toggle("dark");state.theme=document.body.classList.contains("dark")?"dark":"light";persist();};
+$("languageSelect").value=state.language||"ku";$("languageSelect").onchange=e=>{state.language=e.target.value;persist();toast("Language setting saved. Full translations can be added in a later version.");};
+$("penBtn").onclick=()=>{drawTool="pen";$("penBtn").classList.add("active");$("highlightBtn").classList.remove("active");$("eraserBtn").classList.remove("active");};
+$("highlightBtn").onclick=()=>{drawTool=drawTool==="highlight"?"pen":"highlight";$("highlightBtn").classList.toggle("active",drawTool==="highlight");$("penBtn").classList.toggle("active",drawTool==="pen");$("eraserBtn").classList.remove("active");};
+$("eraserBtn").onclick=()=>{drawTool="eraser";$("eraserBtn").classList.add("active");$("penBtn").classList.remove("active");$("highlightBtn").classList.remove("active");};
+$("undoBtn").onclick=()=>{const n=activeNote();if(!n||!undoStack.length)return;n.strokes=JSON.parse(undoStack.pop());drawStrokes(n.strokes);saveEditor();};
+$("clearCanvasBtn").onclick=()=>{if(!activeNote())return;if(confirm("هەموو نووسینی قەڵەم بسڕمەوە؟")){undoStack.push(JSON.stringify(activeNote().strokes||[]));activeNote().strokes=[];drawStrokes([]);saveEditor();}};
+$("deleteNoteBtn").onclick=()=>{const n=activeNote();if(!n)return;if(confirm("ئەم تێبینییە بسڕمەوە؟")){state.notes=state.notes.filter(x=>x.id!==n.id);currentNoteId=null;persist();renderAll();}};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString(),app:"StudySpace",schemaVersion:1},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="studyspace-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup exported.");};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.subjects)||!Array.isArray(data.notes))throw Error("invalid");if(!confirm("Restore backup? Current app data will be replaced."))return;state={subjects:data.subjects,notes:data.notes,theme:data.theme||"light",language:data.language||"ku",selectedSubject:data.selectedSubject||data.subjects[0]?.id};selectedSubject=state.selectedSubject||"ku";document.body.classList.toggle("dark",state.theme==="dark");currentNoteId=null;persist();renderAll();toast("Backup restored.");}catch{toast("Backup file is invalid or damaged.");}e.target.value="";};
+canvas.addEventListener("pointerdown",pointerDown);canvas.addEventListener("pointermove",pointerMove);canvas.addEventListener("pointerup",pointerUp);canvas.addEventListener("pointercancel",pointerUp);window.addEventListener("resize",()=>{if(mode==="paper")resizeCanvas();});
+document.body.classList.toggle("dark",state.theme==="dark");initSymbols();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+if(!state.subjects?.length)state.subjects=defaultSubjects;
+if(!state.notes?.length){const n={id:"welcome",subjectId:"ku",title:"تێبینی نموونە",body:"ئەمە تێبینییەکی نموونەیە. دەتوانیت دەستکاری بکەیت یان تێبینییەکی نوێ دروست بکەیت.",strokes:[],updated:Date.now()};state.notes.push(n);}
+currentNoteId=state.notes.find(n=>n.subjectId===selectedSubject)?.id||null;
+if(!currentNoteId){const n={id:"welcome-"+Date.now(),subjectId:selectedSubject,title:"",body:"",strokes:[],updated:Date.now()};state.notes.unshift(n);currentNoteId=n.id;}
+initSymbols();persist();renderAll();setMode("text");
 })();
