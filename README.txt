@@ -1,17 +1,15 @@
-StudySpace Pink — FINAL CHECKED PACKAGE
+STUDYSPACE BLACK + ELECTRIC BLUE
 
-Files: index.html, manifest.webmanifest, sw.js, icon.svg, abstract-pink.svg.
+Files: index.html, icon.svg, README.txt
 
-Features in this package:
-- Dark and light theme (plus system preference)
-- Pink abstract background and custom background color option
-- Nine subjects and note editor with formatting, lists, highlights, tags, stickers, attachments, and handwriting pad
-- Hide/reveal selected words and reveal-all
-- Export current note using the browser print dialog (choose Save as PDF)
-- Backup and restore notes as JSON
-- AI study prompt generator that opens ChatGPT (not a built-in private AI API)
-- App icon, launch screen, web manifest, and service worker for installability
+Publish on GitHub Pages:
+1. Download and extract this ZIP.
+2. Open https://github.com/azmark614-dot/studyspace
+3. Open the repository and choose Add file > Upload files.
+4. Upload index.html and icon.svg from the extracted folder into the repository root.
+5. Commit changes. Wait a minute, then open https://azmark614-dot.github.io/studyspace/ and refresh.
 
-Upload: Extract this ZIP. In the GitHub repository root, upload all five files (not the ZIP), then commit to main. Do not delete other repository files unless instructed.
+IMPORTANT: This version stores notes in this browser on this device. Before replacing files, open the current app and use Export backup. After the update, import the JSON backup if needed. Publishing the app does not sync notes across devices.
 
-Important: Back up notes first. Notes are stored locally in the browser/device and do not automatically sync. Existing notes from a different older app version may not automatically appear.
+
+Brand icon updated to match the requested black and electric-blue StudySpace logo. PNG assets: icon-192.png and icon-512.png. Keep these files in the repository root alongside index.html.
