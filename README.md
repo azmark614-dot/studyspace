@@ -1,3 +1,46 @@
+
+/* Real school notebook paper */
+.paper {
+  background-color: #fffdf5;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 53px,
+      #d87979 54px,
+      #d87979 55px,
+      transparent 56px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      #9dc3e8 32px,
+      transparent 33px
+    );
+  border: 1px solid #d6cbb8;
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: 0 10px 25px #40372720;
+  min-height: 65vh;
+}
+
+#notes {
+  background: transparent;
+  color: #283a50;
+  font-size: 16px;
+  line-height: 33px;
+  padding-left: 75px;
+  border: none;
+  resize: vertical;
+}
+
+#chapterTitle {
+  background: transparent;
+  color: #244e78;
+  border: none;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: bold;
+}
 # StudySpace — fresh starter build
 
 A simple static web app starter for an Android tablet. Includes subject dashboard, typed notes, local saving, math symbol insertion, paper-like canvas drawing, pen/highlighter/eraser controls, undo, dark mode, and JSON backup/restore.
