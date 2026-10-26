@@ -1,0 +1,9 @@
+{
+  "name": "StudySpace",
+  "short_name": "StudySpace",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f6fc",
+  "theme_color": "#6558d3"
+}
