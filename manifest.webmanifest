@@ -1,25 +1,15 @@
 {
-  "name": "StudySpace",
+  "id": "./",
+  "name": "StudySpace 11–12",
   "short_name": "StudySpace",
+  "description": "Your personal study notebook with subjects, notes, highlighting, photos and videos.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f4f6fb",
-  "theme_color": "#111d36",
-  "description": "Personal school notes and math notebook",
+  "background_color": "#0b1020",
+  "theme_color": "#111a32",
   "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
