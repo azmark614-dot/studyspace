@@ -1,3 +1,355 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c63ff">
+<title>StudySpace</title>
+<style>
+:root{--bg:#f5f6fc;--panel:#fff;--ink:#20233a;--muted:#737792;--brand:#6c63ff;--line:#e7e8f2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;background:#efefff;color:#5148d9;font-weight:600}
+button.primary{background:var(--brand);color:white}
+button.danger{background:#fff0f1;color:#c63f50}
+button.ghost{background:#f4f4fa;color:var(--ink)}
+.app{max-width:1100px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:45px;height:45px;display:grid;place-items:center;background:linear-gradient(135deg,#7d72ff,#4d9bff);border-radius:14px;color:white;font-size:24px}
+h1{font-size:22px;margin:0}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px}
+.sidebar,.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px}
+.sidebar{height:max-content;position:sticky;top:10px}
+.nav{display:block;width:100%;text-align:left;background:transparent;color:var(--muted);margin:3px 0}
+.nav.active{background:#efefff;color:#5148d9}
+.content{min-width:0}
+.hidden{display:none!important}
+.hero{background:linear-gradient(115deg,#6c63ff,#5cb8dc);padding:22px;border-radius:18px;color:white;margin-bottom:16px}
+.hero h2{margin:0 0 5px}
+.hero p{margin:0}
+.stats,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr));margin:16px 0}
+.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:13px}
+.stat b{display:block;font-size:22px}
+.stat span,.muted{color:var(--muted);font-size:13px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:20px 0 12px;flex-wrap:wrap}
+.section-head h3{margin:0}
+.field{display:block;width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;margin:7px 0;background:white;color:var(--ink)}
+textarea.field{min-height:100px;resize:vertical}
+.card{margin-bottom:10px;overflow-wrap:anywhere}
+.card h4{margin:0 0 7px}
+.card p{white-space:pre-wrap}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-block;background:#efefff;color:#5148d9;padding:3px 8px;border-radius:20px;font-size:12px}
+.empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed #d8d9e8;border-radius:14px;grid-column:1/-1}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+@media(max-width:700px){.app{padding:12px}.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;overflow-x:auto;padding:7px;gap:4px}.nav{width:auto;white-space:nowrap;margin:0}.stats{gap:7px}.stat{padding:9px}.stat b{font-size:18px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">✦</div><div><h1>StudySpace</h1><p>Your personal learning corner</p></div></div>
+  <button class="primary" onclick="showPage('subjects');document.getElementById('subjectName').focus()">＋ New Subject</button>
+</header>
+<div class="layout">
+<aside class="sidebar">
+  <button class="nav active" data-page="home" onclick="showPage('home')">🏠 Dashboard</button>
+  <button class="nav" data-page="subjects" onclick="showPage('subjects')">📚 Main Subjects</button>
+  <button class="nav" data-page="notes" onclick="showPage('notes')">📝 All Notes</button>
+  <button class="nav" data-page="cards" onclick="showPage('cards')">🧠 Flashcards</button>
+  <button class="nav" data-page="quizzes" onclick="showPage('quizzes')">🎯 Quizzes</button>
+</aside>
+<main class="content">
+
+<section id="page-home">
+  <div class="hero"><h2>Make today a learning day ✨</h2><p>Organize every subject and keep learning.</p></div>
+  <div class="stats">
+    <div class="stat"><b id="statSubjects">0</b><span>📚 Subjects</span></div>
+    <div class="stat"><b id="statNotes">0</b><span>📝 Notes</span></div>
+    <div class="stat"><b id="statCards">0</b><span>🧠 Flashcards</span></div>
+  </div>
+  <div class="section-head"><h3>Your subjects</h3><button onclick="showPage('subjects')">View all →</button></div>
+  <div id="homeSubjects" class="grid"></div>
+  <div class="section-head"><h3>Recent notes</h3><button onclick="showPage('notes')">All notes →</button></div>
+  <div id="homeNotes"></div>
+</section>
+
+<section id="page-subjects" class="hidden">
+  <div class="section-head"><h3>📚 Main Subjects</h3></div>
+  <div class="panel">
+    <p class="muted">Create as many subjects as you want. There is no fixed limit.</p>
+    <input id="subjectName" class="field" placeholder="Subject name (e.g. English)" maxlength="100">
+    <div class="row"><button class="primary" onclick="addSubject()">＋ Add Subject</button></div>
+  </div>
+  <div class="section-head"><h3>Your subjects</h3></div>
+  <div id="subjectsList" class="grid"></div>
+</section>
+
+<section id="page-notes" class="hidden">
+  <div class="section-head"><h3>📝 Notes</h3><button class="primary" onclick="newNote()">＋ New Note</button></div>
+  <div id="noteEditor" class="panel hidden">
+    <input id="noteTitle" class="field" placeholder="Note title">
+    <select id="noteSubject" class="field"></select>
+    <textarea id="noteBody" class="field" placeholder="Write your notes here..."></textarea>
+    <div class="row"><button class="primary" onclick="saveNote()">Save Note</button><button class="ghost" onclick="cancelNote()">Cancel</button></div>
+  </div>
+  <select id="notesFilter" class="field" onchange="renderNotes()"></select>
+  <div id="notesList"></div>
+</section>
+
+<section id="page-cards" class="hidden">
+  <div class="section-head"><h3>🧠 Flashcards</h3><button class="primary" onclick="toggleForm('cardForm')">＋ Add Card</button></div>
+  <div id="cardForm" class="panel hidden">
+    <input id="cardQuestion" class="field" placeholder="Question or front">
+    <textarea id="cardAnswer" class="field" placeholder="Answer or back"></textarea>
+    <select id="cardSubject" class="field"></select>
+    <div class="row"><button class="primary" onclick="addCard()">Save Card</button></div>
+  </div>
+  <select id="cardsFilter" class="field" onchange="renderCards()"></select>
+  <div id="cardsList" class="grid"></div>
+</section>
+
+<section id="page-quizzes" class="hidden">
+  <div class="section-head"><h3>🎯 Quiz Questions</h3><button class="primary" onclick="toggleForm('quizForm')">＋ Add Question</button></div>
+  <div id="quizForm" class="panel hidden">
+    <input id="quizQuestion" class="field" placeholder="Question">
+    <input id="quizAnswer" class="field" placeholder="Correct answer">
+    <select id="quizSubject" class="field"></select>
+    <div class="row"><button class="primary" onclick="addQuiz()">Save Question</button></div>
+  </div>
+  <select id="quizzesFilter" class="field" onchange="renderQuizzes()"></select>
+  <div id="quizzesList"></div>
+</section>
+
+<section id="page-subject-detail" class="hidden">
+  <button class="ghost" onclick="showPage('subjects')">← All subjects</button>
+  <div id="subjectDetail"></div>
+</section>
+
+</main>
+</div>
+<footer>StudySpace · Your data is saved in this browser.</footer>
+</div>
+
+<script>
+const STORAGE_KEY='studyspace_unlimited_v1';
+let db={subjects:[],notes:[],cards:[],quizzes:[]};
+let editingNote=null;
+let flippedCards=new Set();
+try{
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+  if(saved&&typeof saved==='object'){
+    db.subjects=Array.isArray(saved.subjects)?saved.subjects:[];
+    db.notes=Array.isArray(saved.notes)?saved.notes:[];
+    db.cards=Array.isArray(saved.cards)?saved.cards:[];
+    db.quizzes=Array.isArray(saved.quizzes)?saved.quizzes:[];
+  }
+}catch(e){}
+
+const $=id=>document.getElementById(id);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const subjectName=id=>db.subjects.find(s=>s.id===id)?.name||'Unassigned';
+
+function persist(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(db));
+  renderAll();
+}
+function showPage(page){
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+  const el=$('page-'+page);
+  if(el)el.classList.remove('hidden');
+  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  renderAll();
+}
+function toggleForm(id){$(id).classList.toggle('hidden');}
+function addSubject(){
+  const input=$('subjectName');
+  const name=input.value.trim();
+  if(!name){alert('Please enter a subject name.');input.focus();return;}
+  db.subjects.push({id:uid(),name,created:Date.now()});
+  input.value='';
+  persist();
+  input.focus();
+}
+$('subjectName').addEventListener('keydown',e=>{if(e.key==='Enter')addSubject();});
+
+function renameSubject(id){
+  const s=db.subjects.find(x=>x.id===id);if(!s)return;
+  const value=prompt('New subject name:',s.name);
+  if(value===null||!value.trim())return;
+  s.name=value.trim();persist();
+}
+function deleteSubject(id){
+  const s=db.subjects.find(x=>x.id===id);if(!s)return;
+  if(!confirm(`Delete "${s.name}"? Its notes, flashcards and quizzes will be kept as Unassigned.`))return;
+  db.subjects=db.subjects.filter(x=>x.id!==id);
+  [...db.notes,...db.cards,...db.quizzes].forEach(item=>{if(item.subjectId===id)item.subjectId='';});
+  persist();
+}
+function openSubject(id){
+  const s=db.subjects.find(x=>x.id===id);if(!s)return;
+  $('subjectDetail').innerHTML=`
+    <div class="hero"><h2>📚 ${esc(s.name)}</h2><p>Your study space for this subject.</p></div>
+    <div class="stats">
+      <div class="stat"><b>${db.notes.filter(x=>x.subjectId===id).length}</b><span>Notes</span></div>
+      <div class="stat"><b>${db.cards.filter(x=>x.subjectId===id).length}</b><span>Flashcards</span></div>
+      <div class="stat"><b>${db.quizzes.filter(x=>x.subjectId===id).length}</b><span>Quiz questions</span></div>
+    </div>
+    <div class="row">
+      <button class="primary" onclick="newNote('${id}')">＋ Note</button>
+      <button onclick="showPage('cards');$('cardSubject').value='${id}';toggleForm('cardForm')">＋ Flashcard</button>
+      <button onclick="showPage('quizzes');$('quizSubject').value='${id}';toggleForm('quizForm')">＋ Quiz</button>
+    </div>
+    <h3 style="margin-top:22px">Notes</h3>
+    ${renderSubjectNotes(id)}
+    <h3>Flashcards</h3>
+    ${renderSubjectCards(id)}
+    <h3>Quiz questions</h3>
+    ${renderSubjectQuizzes(id)}`;
+  showPage('subject-detail');
+}
+function renderSubjectNotes(id){
+  const items=db.notes.filter(n=>n.subjectId===id);
+  return items.length?items.map(n=>`<article class="card"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><button onclick="editNote('${n.id}')">Edit</button></article>`).join(''):'<p class="muted">No notes yet.</p>';
+}
+function renderSubjectCards(id){
+  const items=db.cards.filter(c=>c.subjectId===id);
+  return items.length?items.map(c=>`<article class="card"><h4>${esc(c.question)}</h4><p>${esc(c.answer)}</p></article>`).join(''):'<p class="muted">No flashcards yet.</p>';
+}
+function renderSubjectQuizzes(id){
+  const items=db.quizzes.filter(q=>q.subjectId===id);
+  return items.length?items.map(q=>`<article class="card"><h4>${esc(q.question)}</h4><details><summary>Show answer</summary><p>${esc(q.answer)}</p></details></article>`).join(''):'<p class="muted">No quiz questions yet.</p>';
+}
+
+function subjectOptions(selectId,filter=false){
+  const select=$(selectId);if(!select)return;
+  const previous=select.value;
+  select.innerHTML=(filter?'<option value="all">All subjects</option>':'<option value="">Unassigned</option>')+
+    db.subjects.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+  if([...select.options].some(o=>o.value===previous))select.value=previous;
+}
+function openSubjectForm(){showPage('subjects');$('subjectName').focus();}
+function newNote(subjectId=''){
+  editingNote=null;
+  $('noteTitle').value='';
+  $('noteBody').value='';
+  $('noteSubject').value=subjectId;
+  $('noteEditor').classList.remove('hidden');
+  $('noteTitle').focus();
+}
+function editNote(id){
+  const n=db.notes.find(x=>x.id===id);if(!n)return;
+  editingNote=id;
+  showPage('notes');
+  $('noteEditor').classList.remove('hidden');
+  $('noteTitle').value=n.title;
+  $('noteBody').value=n.body;
+  $('noteSubject').value=n.subjectId||'';
+}
+function cancelNote(){$('noteEditor').classList.add('hidden');editingNote=null;}
+function saveNote(){
+  const title=$('noteTitle').value.trim();
+  const body=$('noteBody').value.trim();
+  if(!title&&!body){alert('Write a title or note first.');return;}
+  const item={id:editingNote||uid(),title:title||'Untitled note',body,subjectId:$('noteSubject').value,updated:Date.now()};
+  if(editingNote)db.notes=db.notes.map(n=>n.id===editingNote?item:n);
+  else db.notes.unshift(item);
+  cancelNote();persist();
+}
+function deleteNote(id){
+  if(!confirm('Delete this note?'))return;
+  db.notes=db.notes.filter(n=>n.id!==id);persist();
+}
+function addCard(){
+  const question=$('cardQuestion').value.trim(),answer=$('cardAnswer').value.trim();
+  if(!question||!answer){alert('Enter both a question and answer.');return;}
+  db.cards.unshift({id:uid(),question,answer,subjectId:$('cardSubject').value,created:Date.now()});
+  $('cardQuestion').value='';$('cardAnswer').value='';
+  $('cardForm').classList.add('hidden');persist();
+}
+function addQuiz(){
+  const question=$('quizQuestion').value.trim(),answer=$('quizAnswer').value.trim();
+  if(!question||!answer){alert('Enter a question and correct answer.');return;}
+  db.quizzes.unshift({id:uid(),question,answer,subjectId:$('quizSubject').value,created:Date.now()});
+  $('quizQuestion').value='';$('quizAnswer').value='';
+  $('quizForm').classList.add('hidden');persist();
+}
+function removeItem(type,id){
+  if(!confirm('Delete this item?'))return;
+  db[type]=db[type].filter(x=>x.id!==id);persist();
+}
+function renderSubjects(){
+  $('subjectsList').innerHTML=db.subjects.length?db.subjects.map(s=>`
+    <article class="card">
+      <h4>📘 ${esc(s.name)}</h4>
+      <p class="muted">${db.notes.filter(n=>n.subjectId===s.id).length} notes · ${db.cards.filter(c=>c.subjectId===s.id).length} cards · ${db.quizzes.filter(q=>q.subjectId===s.id).length} quiz questions</p>
+      <div class="row">
+        <button class="primary" onclick="openSubject('${s.id}')">Open</button>
+        <button onclick="renameSubject('${s.id}')">✏️ Rename</button>
+        <button class="danger" onclick="deleteSubject('${s.id}')">Delete</button>
+      </div>
+    </article>`).join(''):'<div class="empty">No subjects yet. Add your first subject above!</div>';
+  $('homeSubjects').innerHTML=db.subjects.length?db.subjects.slice(0,6).map(s=>`
+    <article class="card"><h4>📘 ${esc(s.name)}</h4>
+    <p class="muted">${db.notes.filter(n=>n.subjectId===s.id).length} notes</p>
+    <button onclick="openSubject('${s.id}')">Open subject →</button></article>`).join(''):'<div class="empty">Add your first subject to begin.</div>';
+}
+function renderNotes(){
+  const filter=$('notesFilter').value||'all';
+  const items=db.notes.filter(n=>filter==='all'||(filter==='unassigned'?!n.subjectId:n.subjectId===filter));
+  $('notesList').innerHTML=items.length?items.map(n=>`
+    <article class="card"><span class="tag">${esc(subjectName(n.subjectId))}</span>
+    <h4 style="margin-top:8px">${esc(n.title)}</h4><p>${esc(n.body)}</p>
+    <div class="row"><button onclick="editNote('${n.id}')">Edit</button><button class="danger" onclick="deleteNote('${n.id}')">Delete</button></div></article>`).join(''):'<div class="empty">No notes here yet.</div>';
+}
+function renderCards(){
+  const filter=$('cardsFilter').value||'all';
+  const items=db.cards.filter(c=>filter==='all'||(filter==='unassigned'?!c.subjectId:c.subjectId===filter));
+  $('cardsList').innerHTML=items.length?items.map(c=>`
+    <article class="card">
+      <span class="tag">${esc(subjectName(c.subjectId))}</span>
+      <h4 style="margin-top:8px">${esc(c.question)}</h4>
+      <p id="answer-${c.id}" class="hidden">${esc(c.answer)}</p>
+      <div class="row"><button onclick="$('answer-${c.id}').classList.toggle('hidden')">Show / Hide Answer</button><button class="danger" onclick="removeItem('cards','${c.id}')">Delete</button></div>
+    </article>`).join(''):'<div class="empty">No flashcards here yet.</div>';
+}
+function renderQuizzes(){
+  const filter=$('quizzesFilter').value||'all';
+  const items=db.quizzes.filter(q=>filter==='all'||(filter==='unassigned'?!q.subjectId:q.subjectId===filter));
+  $('quizzesList').innerHTML=items.length?items.map(q=>`
+    <article class="card"><span class="tag">${esc(subjectName(q.subjectId))}</span>
+    <h4 style="margin-top:8px">${esc(q.question)}</h4>
+    <details><summary>Show answer</summary><p>${esc(q.answer)}</p></details>
+    <div class="row"><button class="danger" onclick="removeItem('quizzes','${q.id}')">Delete</button></div></article>`).join(''):'<div class="empty">No quiz questions here yet.</div>';
+}
+function renderHome(){
+  $('statSubjects').textContent=db.subjects.length;
+  $('statNotes').textContent=db.notes.length;
+  $('statCards').textContent=db.cards.length;
+  $('homeNotes').innerHTML=db.notes.length?db.notes.slice(0,4).map(n=>`
+    <article class="card"><span class="tag">${esc(subjectName(n.subjectId))}</span>
+    <h4 style="margin-top:8px">${esc(n.title)}</h4><p>${esc(n.body.slice(0,180))}</p>
+    <button onclick="editNote('${n.id}')">Edit note</button></article>`).join(''):'<div class="empty">Your recent notes will appear here.</div>';
+}
+function renderAll(){
+  subjectOptions('noteSubject');
+  subjectOptions('cardSubject');
+  subjectOptions('quizSubject');
+  subjectOptions('notesFilter',true);
+  subjectOptions('cardsFilter',true);
+  subjectOptions('quizzesFilter',true);
+  renderSubjects();renderNotes();renderCards();renderQuizzes();renderHome();
+}
+renderAll();
+</script>
+</body>
+</html>
 <!doctype html>
 <html lang="en">
 <head>
