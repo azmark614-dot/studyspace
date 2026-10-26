@@ -3,6 +3,451 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6558d3">
+<title>StudySpace — Your Study World</title>
+<style>
+:root {
+  --primary:#6558d3;
+  --bg:#f5f6fc;
+  --card:#ffffff;
+  --text:#202239;
+  --muted:#73758b;
+  --border:#e5e6f0;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--primary);color:white}
+button.secondary{background:#ecebfb;color:#4940a7}
+button.danger{background:#ffe7e9;color:#b42335}
+input,textarea,select{width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text)}
+textarea{resize:vertical;min-height:100px}
+header{background:var(--card);padding:15px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:800;color:var(--primary)}
+header .actions{display:flex;gap:8px;flex-wrap:wrap}
+main{max-width:1100px;margin:auto;padding:22px}
+h1{font-size:27px;margin:5px 0 8px}
+h2{font-size:20px;margin:0 0 14px}
+p,.muted{color:var(--muted)}
+.section{margin:24px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:17px;box-shadow:0 3px 12px #22222205}
+.subject-card{cursor:pointer;transition:transform .15s}
+.subject-card:hover{transform:translateY(-2px)}
+.subject-icon{font-size:30px}
+.subject-card h3{margin:10px 0 5px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.row button{flex:0 0 auto}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}
+.tab{background:#e9e8f7;color:#4e479b}
+.tab.active{background:var(--primary);color:white}
+.hidden{display:none!important}
+.note-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.note-card{padding:0;overflow:hidden}
+.note-card-top{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px;flex-wrap:wrap}
+.note-title{font-size:18px;font-weight:700;border:0;background:transparent;outline:none}
+.editor{min-height:240px;padding:18px;outline:none;line-height:1.65;overflow-wrap:anywhere}
+.editor:empty:before{content:attr(data-placeholder);color:#999;pointer-events:none}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--border);background:#fafaff}
+.tool{background:#eeeeFA;color:#34315c;padding:8px 10px}
+.tool:hover{background:#dedafb}
+.color-input{width:38px;height:36px;padding:2px;cursor:pointer}
+.color-label{font-size:12px;color:var(--muted);display:flex;gap:5px;align-items:center}
+.note-list{display:grid;gap:12px}
+.note-preview{padding:15px;border-radius:12px;border:1px solid var(--border);cursor:pointer}
+.note-preview h3{margin:0 0 8px}
+.note-preview .preview-text{max-height:80px;overflow:hidden}
+.flashcard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
+.flashcard .big{font-size:22px;font-weight:700;margin:20px 0}
+.quiz-question{margin:14px 0;padding:14px;border:1px solid var(--border);border-radius:12px}
+.quiz-question label{display:flex;gap:8px;align-items:center;margin:10px 0}
+.quiz-question input{width:auto}
+footer{text-align:center;padding:25px;color:var(--muted)}
+@media(min-width:760px){.note-layout{grid-template-columns:minmax(0,1.1fr) minmax(250px,.9fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">📚 StudySpace</div>
+  <div class="actions">
+    <button class="secondary" onclick="toggleLanguage()" id="languageButton">کوردی</button>
+    <button onclick="showHome()">⌂ Home</button>
+  </div>
+</header>
+
+<main>
+  <section id="homePage">
+    <h1 id="welcomeTitle">Your Study World ✨</h1>
+    <p id="welcomeText">Create unlimited subjects. Keep notes, flashcards and quizzes organised.</p>
+    <div class="row section">
+      <input id="subjectName" placeholder="Enter a subject name..." maxlength="80">
+      <button onclick="addSubject()" id="addSubjectButton">＋ Add subject</button>
+    </div>
+    <div class="section">
+      <h2 id="subjectsHeading">My Subjects</h2>
+      <div class="grid" id="subjectGrid"></div>
+      <p id="emptySubjects" class="muted">No subjects yet. Add your first subject above.</p>
+    </div>
+  </section>
+
+  <section id="subjectPage" class="hidden">
+    <div class="row">
+      <div>
+        <button class="secondary" onclick="showHome()">← Home</button>
+        <h1 id="subjectHeading"></h1>
+        <p id="subjectSubtitle">Your notes, flashcards and quizzes in one place.</p>
+      </div>
+      <button class="secondary" onclick="renameSubject()">✎ Rename</button>
+      <button class="danger" onclick="deleteSubject()">Delete subject</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="notes" onclick="setTab('notes',this)">📝 Notes</button>
+      <button class="tab" data-tab="cards" onclick="setTab('cards',this)">🗂️ Flashcards</button>
+      <button class="tab" data-tab="quiz" onclick="setTab('quiz',this)">❓ Quizzes</button>
+    </div>
+
+    <section id="notesPanel">
+      <div class="note-layout">
+        <div class="card note-card">
+          <div class="note-card-top">
+            <input class="note-title" id="noteTitle" placeholder="Note title..." maxlength="150">
+            <button onclick="newNote()">＋ New note</button>
+          </div>
+
+          <div class="toolbar">
+            <button class="tool" onclick="format('bold')" title="Bold"><b>B</b></button>
+            <button class="tool" onclick="format('italic')" title="Italic"><i>I</i></button>
+            <button class="tool" onclick="format('underline')" title="Underline"><u>U</u></button>
+            <button class="tool" onclick="format('insertUnorderedList')" title="Bullet list">• List</button>
+            <button class="tool" onclick="format('insertOrderedList')" title="Numbered list">1. List</button>
+            <button class="tool" onclick="highlightText('#fff176')" title="Yellow highlight">🟨 Highlight</button>
+            <button class="tool" onclick="highlightText('#a7f3d0')" title="Green highlight">🟩</button>
+            <button class="tool" onclick="highlightText('#bfdbfe')" title="Blue highlight">🟦</button>
+            <button class="tool" onclick="highlightText('#fbcfe8')" title="Pink highlight">🩷</button>
+            <button class="tool" onclick="highlightText('#ddd6fe')" title="Purple highlight">🟪</button>
+            <button class="tool" onclick="format('removeFormat')" title="Remove text formatting">Clear format</button>
+            <button class="tool" onclick="insertEmoji('😀')">😀</button>
+            <button class="tool" onclick="insertEmoji('⭐')">⭐</button>
+            <button class="tool" onclick="insertEmoji('📌')">📌</button>
+            <button class="tool" onclick="insertEmoji('💡')">💡</button>
+            <button class="tool" onclick="insertEmoji('❤️')">❤️</button>
+          </div>
+
+          <div class="toolbar">
+            <label class="color-label">Page color
+              <input class="color-input" type="color" id="pageColor" value="#ffffff" onchange="changePageColor(this.value)">
+            </label>
+            <label class="color-label">Text color
+              <input class="color-input" type="color" id="textColor" value="#202239" onchange="formatTextColor(this.value)">
+            </label>
+            <button class="tool" onclick="changePageColor('#ffffff')">White page</button>
+            <button class="tool" onclick="changePageColor('#fffde7')">Cream</button>
+            <button class="tool" onclick="changePageColor('#e8f5e9')">Green</button>
+            <button class="tool" onclick="changePageColor('#e3f2fd')">Blue</button>
+            <button class="tool" onclick="changePageColor('#fce4ec')">Pink</button>
+            <button class="tool" onclick="changePageColor('#f3e5f5')">Purple</button>
+          </div>
+
+          <div class="editor" id="noteEditor" contenteditable="true" data-placeholder="Start writing your notes here..."></div>
+          <div class="note-card-top">
+            <span id="saveStatus" class="muted">Auto-save enabled</span>
+            <button onclick="saveCurrentNote()">Save note</button>
+          </div>
+        </div>
+
+        <div>
+          <h2>📝 Your Notes</h2>
+          <div id="notesList" class="note-list"></div>
+          <p class="muted" id="emptyNotes">Your notes will appear here.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="cardsPanel" class="hidden">
+      <div class="card section">
+        <h2>Create a flashcard</h2>
+        <input id="cardFront" placeholder="Question or front of card">
+        <div style="height:8px"></div>
+        <textarea id="cardBack" placeholder="Answer or back of card"></textarea>
+        <div style="height:8px"></div>
+        <button onclick="addFlashcard()">＋ Add flashcard</button>
+      </div>
+      <div class="grid" id="flashcardList"></div>
+      <p id="emptyCards" class="muted">No flashcards yet.</p>
+    </section>
+
+    <section id="quizPanel" class="hidden">
+      <div class="card section">
+        <h2>Add a quiz question</h2>
+        <input id="quizQuestion" placeholder="Write your question">
+        <div style="height:8px"></div>
+        <input id="quizA" placeholder="Option A">
+        <div style="height:8px"></div>
+        <input id="quizB" placeholder="Option B">
+        <div style="height:8px"></div>
+        <input id="quizC" placeholder="Option C">
+        <div style="height:8px"></div>
+        <label for="correctAnswer">Correct answer</label>
+        <select id="correctAnswer">
+          <option value="0">Option A</option>
+          <option value="1">Option B</option>
+          <option value="2">Option C</option>
+        </select>
+        <div style="height:10px"></div>
+        <button onclick="addQuizQuestion()">＋ Add question</button>
+      </div>
+      <div id="quizList"></div>
+      <div class="row section">
+        <button onclick="startQuiz()">▶ Start quiz</button>
+        <button class="secondary" onclick="renderQuizList()">Show questions</button>
+      </div>
+      <div id="quizRunner" class="card hidden"></div>
+    </section>
+  </section>
+</main>
+<footer>StudySpace • Learn your way ✨</footer>
+
+<script>
+const STORAGE_KEY = 'studyspace_unlimited_v1';
+let db = loadDB();
+let currentSubjectId = null;
+let currentNoteId = null;
+let currentTab = 'notes';
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswers = [];
+let language = 'en';
+
+function loadDB(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved && Array.isArray(saved.subjects)) return saved;
+  } catch(e){}
+  return {subjects:[]};
+}
+function persist(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  const status = document.getElementById('saveStatus');
+  if(status) status.textContent = '✓ Saved automatically';
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function esc(s=''){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function currentSubject(){return db.subjects.find(s=>s.id===currentSubjectId)}
+function showHome(){
+  document.getElementById('homePage').classList.remove('hidden');
+  document.getElementById('subjectPage').classList.add('hidden');
+  currentSubjectId=null;
+  renderSubjects();
+}
+function addSubject(){
+  const input=document.getElementById('subjectName');
+  const name=input.value.trim();
+  if(!name){input.focus();return}
+  db.subjects.push({id:uid(),name,notes:[],cards:[],quizzes:[]});
+  input.value='';
+  persist();
+  renderSubjects();
+}
+function renderSubjects(){
+  const grid=document.getElementById('subjectGrid');
+  grid.innerHTML='';
+  document.getElementById('emptySubjects').classList.toggle('hidden',db.subjects.length>0);
+  db.subjects.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='card subject-card';
+    el.innerHTML=`<div class="subject-icon">📚</div><h3>${esc(s.name)}</h3>
+      <p>${s.notes.length} notes · ${s.cards.length} flashcards · ${s.quizzes.length} questions</p>
+      <button>Open subject →</button>`;
+    el.onclick=()=>openSubject(s.id);
+    grid.appendChild(el);
+  });
+}
+function openSubject(id){
+  currentSubjectId=id;
+  const s=currentSubject();
+  if(!s)return;
+  document.getElementById('homePage').classList.add('hidden');
+  document.getElementById('subjectPage').classList.remove('hidden');
+  document.getElementById('subjectHeading').textContent=s.name;
+  currentNoteId=null;
+  document.getElementById('noteTitle').value='';
+  document.getElementById('noteEditor').innerHTML='';
+  changePageColor('#ffffff',false);
+  setTab(currentTab);
+  renderNotes();
+  renderFlashcards();
+  renderQuizList();
+}
+function renameSubject(){
+  const s=currentSubject();if(!s)return;
+  const name=prompt('New subject name:',s.name);
+  if(name&&name.trim()){s.name=name.trim();persist();openSubject(s.id);renderSubjects()}
+}
+function deleteSubject(){
+  const s=currentSubject();if(!s)return;
+  if(!confirm(`Delete "${s.name}" and all its notes, flashcards and quizzes?`))return;
+  db.subjects=db.subjects.filter(x=>x.id!==s.id);
+  persist();showHome();
+}
+function setTab(tab,button){
+  currentTab=tab;
+  ['notes','cards','quiz'].forEach(t=>{
+    document.getElementById(t==='notes'?'notesPanel':t==='cards'?'cardsPanel':'quizPanel').classList.toggle('hidden',t!==tab);
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+}
+function newNote(){
+  saveCurrentNote();
+  currentNoteId=null;
+  document.getElementById('noteTitle').value='';
+  document.getElementById('noteEditor').innerHTML='';
+  changePageColor('#ffffff',false);
+  document.getElementById('noteTitle').focus();
+}
+function saveCurrentNote(){
+  const s=currentSubject();if(!s)return;
+  const title=document.getElementById('noteTitle').value.trim()||'Untitled note';
+  const content=document.getElementById('noteEditor').innerHTML;
+  const color=document.getElementById('noteEditor').dataset.pageColor||'#ffffff';
+  if(!currentNoteId && !content.trim() && title==='Untitled note')return;
+  let note=s.notes.find(n=>n.id===currentNoteId);
+  if(!note){
+    note={id:uid(),title,content,color,updated:Date.now()};
+    s.notes.unshift(note);currentNoteId=note.id;
+  }else{
+    note.title=title;note.content=content;note.color=color;note.updated=Date.now();
+    s.notes.sort((a,b)=>b.updated-a.updated);
+  }
+  persist();renderNotes();
+}
+function renderNotes(){
+  const s=currentSubject();if(!s)return;
+  const list=document.getElementById('notesList');list.innerHTML='';
+  document.getElementById('emptyNotes').classList.toggle('hidden',s.notes.length>0);
+  s.notes.forEach(n=>{
+    const el=document.createElement('div');
+    el.className='note-preview';
+    el.style.background=n.color||'#ffffff';
+    el.innerHTML=`<h3>${esc(n.title)}</h3><div class="preview-text">${n.content||'<span class="muted">Empty note</span>'}</div>
+      <div class="row" style="margin-top:10px"><button class="secondary">Open</button><button class="danger">Delete</button></div>`;
+    el.querySelector('.secondary').onclick=()=>editNote(n.id);
+    el.querySelector('.danger').onclick=(e)=>{
+      e.stopPropagation();
+      if(confirm('Delete this note?')){
+        s.notes=s.notes.filter(x=>x.id!==n.id);
+        if(currentNoteId===n.id)newNote();
+        persist();renderNotes();
+      }
+    };
+    list.appendChild(el);
+  });
+}
+function editNote(id){
+  saveCurrentNote();
+  const s=currentSubject(),n=s.notes.find(x=>x.id===id);if(!n)return;
+  currentNoteId=n.id;
+  document.getElementById('noteTitle').value=n.title;
+  document.getElementById('noteEditor').innerHTML=n.content||'';
+  changePageColor(n.color||'#ffffff',false);
+  document.getElementById('noteEditor').focus();
+}
+function format(command){
+  document.getElementById('noteEditor').focus();
+  document.execCommand(command,false,null);
+  saveCurrentNote();
+}
+function highlightText(color){
+  const editor=document.getElementById('noteEditor');
+  editor.focus();
+  document.execCommand('hiliteColor',false,color);
+  saveCurrentNote();
+}
+function formatTextColor(color){
+  document.getElementById('noteEditor').focus();
+  document.execCommand('foreColor',false,color);
+  saveCurrentNote();
+}
+function insertEmoji(emoji){
+  const editor=document.getElementById('noteEditor');
+  editor.focus();
+  document.execCommand('insertText',false,emoji);
+  saveCurrentNote();
+}
+function changePageColor(color,save=true){
+  const editor=document.getElementById('noteEditor');
+  editor.style.backgroundColor=color;
+  editor.dataset.pageColor=color;
+  document.getElementById('pageColor').value=color;
+  if(save)saveCurrentNote();
+}
+document.getElementById('noteTitle').addEventListener('input',()=>{
+  clearTimeout(window.noteSaveTimer);
+  window.noteSaveTimer=setTimeout(saveCurrentNote,400);
+});
+document.getElementById('noteEditor').addEventListener('input',()=>{
+  clearTimeout(window.noteSaveTimer);
+  window.noteSaveTimer=setTimeout(saveCurrentNote,400);
+});
+function addFlashcard(){
+  const front=document.getElementById('cardFront').value.trim();
+  const back=document.getElementById('cardBack').value.trim();
+  if(!front||!back){alert('Enter both the question and the answer.');return}
+  currentSubject().cards.push({id:uid(),front,back,flipped:false});
+  document.getElementById('cardFront').value='';
+  document.getElementById('cardBack').value='';
+  persist();renderFlashcards();
+}
+function renderFlashcards(){
+  const s=currentSubject();if(!s)return;
+  const list=document.getElementById('flashcardList');list.innerHTML='';
+  document.getElementById('emptyCards').classList.toggle('hidden',s.cards.length>0);
+  s.cards.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='card flashcard';
+    el.innerHTML=`<div class="muted">Tap card to flip</div><div class="big">${esc(c.flipped?c.back:c.front)}</div>
+      <div class="row"><button class="secondary">Flip</button><button class="danger">Delete</button></div>`;
+    el.querySelector('.secondary').onclick=()=>{c.flipped=!c.flipped;persist();renderFlashcards()};
+    el.querySelector('.danger').onclick=()=>{currentSubject().cards=currentSubject().cards.filter(x=>x.id!==c.id);persist();renderFlashcards()};
+    el.onclick=(e)=>{if(e.target.tagName!=='BUTTON'){c.flipped=!c.flipped;persist();renderFlashcards()}};
+    list.appendChild(el);
+  });
+}
+function addQuizQuestion(){
+  const question=document.getElementById('quizQuestion').value.trim();
+  const options=['quizA','quizB','quizC'].map(id=>document.getElementById(id).value.trim());
+  const answer=Number(document.getElementById('correctAnswer').value);
+  if(!question||options.some(x=>!x)){alert('Fill in the question and all three options.');return}
+  currentSubject().quizzes.push({id:uid(),question,options,answer});
+  ['quizQuestion','quizA','quizB','quizC'].forEach(id=>document.getElementById(id).value='');
+  persist();renderQuizList();
+}
+function renderQuizList(){
+  const s=currentSubject();if(!s)return;
+  const list=document.getElementById('quizList');list.innerHTML='';
+  s.quizzes.forEach((q,i)=>{
+    const el=document.createElement('div');el.className='quiz-question';
+    el.innerHTML=`<b>${i+1}. ${esc(q.question)}</b><p>${q.options.map((o,j)=>`${'ABC'[j]}. ${esc(o)}`).join('<br>')}</p>
+      <button class="danger">Delete question</button>`;
+    el.querySelector('button').onclick=()=>{s.quizzes=s.quizzes.filter(x=>x.id!==q.id);persist();renderQuizList()};
+    list.appendChild(el);
+  });
+}
+function startQuiz(){
+  const s=currentSubject();if(!s||!s.quizzes.length){alert('Add some quiz questions first.');return}
+  quizIndex=0;quizScore=0;quizAnswers=[];
+  document.getElementById('quizRunner').classList.remove('hidden');
+  renderQuizQuestion();
+}
+functi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#6c63ff">
 <title>StudySpace</title>
