@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#170d1a">
+<title>VibeWave — Music Player</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#100b13;--panel:#1b111f;--panel2:#26152b;--text:#fff5fb;--muted:#bca9bd;--pink:#ff4fa3;--pink2:#ff8ac5;--line:#42253f;--shadow:0 18px 60px #0005}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at 15% 0%,#512044 0,transparent 36%),radial-gradient(ellipse at 100% 40%,#27184d 0,transparent 35%),var(--bg);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);color:var(--text);background:#281728;border-radius:14px;padding:11px 14px;transition:transform .16s,border-color .16s,background .16s}button:hover{border-color:var(--pink);transform:translateY(-1px)}button:focus-visible,input:focus-visible{outline:2px solid var(--pink);outline-offset:2px}.primary{background:linear-gradient(135deg,var(--pink),#b52dff);border:0;color:#210b1b;font-weight:800}.iconbtn{width:44px;height:44px;padding:0;display:grid;place-items:center;font-size:19px}.active{border-color:var(--pink)!important;color:var(--pink2)!important}.wrap{max-width:1100px;margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#ff54a8,#832cff);display:grid;place-items:center;box-shadow:0 0 32px #ff4fa344;font-size:25px}.brand h1{font-size:22px;margin:0;letter-spacing:.2px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:8px}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:linear-gradient(145deg,#211424ed,#160f1bee);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);min-width:0}.hero{display:grid;grid-template-columns: minmax(140px,.72fr) 1fr;gap:20px;align-items:center}.cover{aspect-ratio:1;border-radius:22px;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#ff9bc9,transparent 22%),radial-gradient(circle at 65% 70%,#8d2dff,transparent 32%),linear-gradient(140deg,#41122f,#100c22 70%);border:1px solid #ffffff22;overflow:hidden;position:relative}.cover:after{content:"";position:absolute;width:140%;height:38%;border:2px solid #ff9bd855;border-radius:50%;transform:rotate(-34deg);box-shadow:0 0 40px #ff4fa355}.cover span{font-size:58px;filter:drop-shadow(0 0 18px #ff4fa3);z-index:1}.eyebrow{color:var(--pink2);text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.song-title{font-size:clamp(21px,3vw,30px);margin:8px 0 5px;overflow-wrap:anywhere}.sub{color:var(--muted);margin:0 0 16px}.progress{width:100%;accent-color:var(--pink);margin:12px 0 0}.times{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.controls{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:13px}.play{width:58px;height:58px;border-radius:50%;font-size:22px}.mini-actions{display:flex;justify-content:center;gap:8px;margin-top:12px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px}.section-title h2{font-size:17px;margin:0}.small{font-size:12px;color:var(--muted)}.drop{border:1px dashed #9a527e;border-radius:18px;padding:17px;text-align:center;background:#ff4fa30b;margin-bottom:15px}.drop strong{display:block;margin-bottom:5px}.drop p{font-size:12px;color:var(--muted);margin:0 0 12px}.search{width:100%;padding:12px 14px;border:1px solid var(--line);background:#100b13;color:var(--text);border-radius:13px;margin-bottom:12px}.track-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow:auto}.track{display:flex;align-items:center;gap:11px;padding:10px;border:1px solid transparent;border-radius:15px;background:#ffffff05}.track.current{background:#ff4fa315;border-color:#ff4fa366}.track-art{width:42px;height:42px;flex-shrink:0;border-radius:12px;background:linear-gradient(135deg,#ff4fa3,#5929a8);display:grid;place-items:center}.track-info{flex:1;min-width:0}.track-info b,.track-info span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-info b{font-size:13px}.track-info span{font-size:11px;color:var(--muted);margin-top:3px}.track button{padding:8px 10px}.online{margin-top:18px}.online-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.online-card{padding:13px;border-radius:15px;background:#ffffff06;border:1px solid var(--line)}.online-card b{display:block;margin-bottom:4px}.online-card p{font-size:12px;color:var(--muted);margin:0 0 12px}.online-card button{width:100%;font-size:12px}.footer{color:var(--muted);font-size:11px;text-align:center;padding:20px 4px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#2b1730;border:1px solid var(--pink);padding:12px 16px;border-radius:14px;box-shadow:var(--shadow);max-width:90%;z-index:5;display:none}.light{--bg:#fff5fa;--panel:#fff;--panel2:#ffe7f3;--text:#271324;--muted:#765d70;--line:#edc5db;--shadow:0 18px 60px #5a17441a;background:radial-gradient(ellipse at 15% 0%,#ffd2e8 0,transparent 36%),radial-gradient(ellipse at 100% 40%,#e3d7ff 0,transparent 35%),var(--bg)}.light .panel{background:#ffffffdc}.light .search{background:#fff;color:var(--text)}.light button{background:#fff0f7;color:#4b1b38}.light .primary{background:linear-gradient(135deg,#ff4fa3,#d64eff);color:#260c1c}.light .track{background:#7c2d5d08}.light .online-card{background:#fff9fc}
+@media(max-width:760px){.wrap{padding:14px}.layout{grid-template-columns:1fr}.hero{grid-template-columns:120px 1fr;gap:14px}.panel{padding:15px}.brand h1{font-size:19px}.top{align-items:flex-start}.top-actions{flex-wrap:wrap;justify-content:flex-end}.top-actions button{padding:9px 11px}.online-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+ <div class="brand"><div class="logo">♫</div><div><h1>VibeWave</h1><p>YOUR MUSIC. YOUR VIBE.</p></div></div>
+ <div class="top-actions"><button id="themeBtn" aria-label="Toggle dark and light mode">☀️ Light</button><button id="installBtn" hidden>＋ Install</button></div>
+</header>
+<main class="layout">
+ <section class="panel">
+  <div class="hero">
+   <div class="cover" aria-label="Abstract pink album art"><span>♫</span></div>
+   <div><div class="eyebrow">Now playing</div><h2 class="song-title" id="nowTitle">Pick your first track</h2><p class="sub" id="nowArtist">Add MP3 files from your tablet</p>
+    <div class="times"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+    <input class="progress" type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek song">
+   </div>
+  </div>
+  <div class="controls">
+   <button class="iconbtn" id="shuffleBtn" title="Shuffle" aria-label="Shuffle">🔀</button>
+   <button class="iconbtn" id="prevBtn" title="Previous" aria-label="Previous track">⏮</button>
+   <button class="primary play" id="playBtn" title="Play" aria-label="Play or pause">▶</button>
+   <button class="iconbtn" id="nextBtn" title="Next" aria-label="Next track">⏭</button>
+   <button class="iconbtn" id="repeatBtn" title="Repeat" aria-label="Repeat">🔁</button>
+  </div>
+  <div class="mini-actions"><button id="favoriteBtn">♡ Favorite</button><button id="volumeBtn">🔊 Volume</button></div>
+  <input type="range" id="volume" min="0" max="1" step=".01" value=".85" class="progress" aria-label="Volume" hidden>
+  <audio id="audio" preload="metadata"></audio>
+  <div class="online">
+   <div class="section-title"><h2>Explore online</h2><span class="small">Opens supported services</span></div>
+   <div class="online-grid">
+    <div class="online-card"><b>▶ YouTube</b><p>Search for songs, mixes and videos.</p><button data-online="youtube">Search music ↗</button></div>
+    <div class="online-card"><b>♫ SoundCloud</b><p>Discover tracks and independent artists.</p><button data-online="soundcloud">Explore tracks ↗</button></div>
+   </div>
+  </div>
+ </section>
+ <section class="panel">
+  <div class="section-title"><h2>Your library</h2><span class="small" id="trackCount">0 tracks</span></div>
+  <div class="drop"><strong>＋ Add your MP3 music</strong><p>Choose audio files stored on your device. No upload to a server.</p><button class="primary" id="addBtn">Choose MP3 files</button><input type="file" id="fileInput" accept="audio/*,.mp3,.m4a,.ogg,.wav,.flac" multiple hidden></div>
+  <input class="search" id="search" type="search" placeholder="Search your library…" aria-label="Search songs">
+  <div class="section-title"><h2>Tracks</h2><button id="clearBtn">Clear library</button></div>
+  <div class="track-list" id="trackList"><div class="small">Your songs will appear here after you add files.</div></div>
+  <div class="online" style="margin-top:18px"><div class="section-title"><h2>Favorites</h2><span class="small" id="favCount">0 saved</span></div><div id="favorites" class="small">Tap ♡ Favorite on a song to save it.</div></div>
+ </section>
+</main>
+<div class="footer">VibeWave • Local music stays on this device. Online buttons open external music services.</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const audio=$('audio'), input=$('fileInput');
+let tracks=[], current=-1, shuffle=false, repeat=false, favorites=new Set(), urls=[], deferredPrompt=null;
+const fmt = n => { if(!Number.isFinite(n)||n<0)return '0:00'; return Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0'); };
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',3000);}
+function persistPrefs(){try{localStorage.setItem('vibewave-theme',document.body.classList.contains('light')?'light':'dark');localStorage.setItem('vibewave-favs',JSON.stringify([...favorites]));}catch(e){}}
+function loadPrefs(){try{if(localStorage.getItem('vibewave-theme')==='light')document.body.classList.add('light');favorites=new Set(JSON.parse(localStorage.getItem('vibewave-favs')||'[]'));}catch(e){} updateThemeLabel();}
+function updateThemeLabel(){$('themeBtn').textContent=document.body.classList.contains('light')?'🌙 Dark':'☀️ Light';}
+function updatePlayer(){const t=tracks[current];$('nowTitle').textContent=t?t.name:'Pick your first track';$('nowArtist').textContent=t?(t.artist||'Local audio file'):'Add MP3 files from your tablet';$('favoriteBtn').textContent=t?(favorites.has(t.key)?'♥ Favorited':'♡ Favorite'):'♡ Favorite';$('playBtn').textContent=audio.paused?'▶':'Ⅱ';$('playBtn').setAttribute('aria-label',audio.paused?'Play':'Pause');renderList();renderFavorites();}
+function loadTrack(i,autoplay=false){if(i<0||i>=tracks.length)return;current=i;audio.src=tracks[i].url;audio.load();updatePlayer();if(autoplay)audio.play().catch(()=>toast('Tap Play to start audio.')); }
+function renderList(){const q=$('search').value.toLowerCase().trim(), el=$('trackList');el.replaceChildren();const filtered=tracks.map((t,i)=>({t,i})).filter(x=>x.t.name.toLowerCase().includes(q));$('trackCount').textContent=tracks.length+' track'+(tracks.length===1?'':'s');if(!filtered.length){const d=document.createElement('div');d.className='small';d.textContent=tracks.length?'No matching tracks.':'Your songs will appear here after you add files.';el.append(d);return;}filtered.forEach(({t,i})=>{const row=document.createElement('div');row.className='track'+(i===current?' current':'');const art=document.createElement('div');art.className='track-art';art.textContent='♫';const info=document.createElement('div');info.className='track-info';const b=document.createElement('b');b.textContent=t.name;const s=document.createElement('span');s.textContent=t.artist||'Local audio file';info.append(b,s);const play=document.createElement('button');play.textContent=i===current&&!audio.paused?'Ⅱ':'▶';play.setAttribute('aria-label','Play '+t.name);play.onclick=()=>{if(current===i){audio.paused?audio.play():audio.pause();}else loadTrack(i,true);};const fav=document.createElement('button');fav.textContent=favorites.has(t.key)?'♥':'♡';fav.setAttribute('aria-label','Favorite '+t.name);fav.onclick=()=>toggleFavorite(t);row.append(art,info,fav,play);el.append(row);});}
+function renderFavorites(){const el=$('favorites');el.replaceChildren();const fs=tracks.filter(t=>favorites.has(t.key));$('favCount').textContent=fs.length+' saved';if(!fs.length){el.textContent='Tap ♡ on a song to save it.';return;}fs.forEach(t=>{const b=document.createElement('button');b.style.margin='0 6px 6px 0';b.textContent='♫ '+t.name;b.onclick=()=>loadTrack(tracks.indexOf(t),true);el.append(b);});}
+function toggleFavorite(t){if(favorites.has(t.key))favorites.delete(t.key);else favorites.add(t.key);persistPrefs();updatePlayer();}
+function addFiles(files){let added=0;[...files].filter(f=>f.type.startsWith('audio/')||/\.(mp3|m4a|ogg|wav|flac|aac)$/i.test(f.name)).forEach(f=>{const url=URL.createObjectURL(f);urls.push(url);const name=f.name.replace(/\.[^.]+$/,'');const t={name,artist:'Local audio file',url,key:f.name+'-'+f.size+'-'+f.lastModified};tracks.push(t);added++;});if(added){if(current<0)loadTrack(0);else updatePlayer();toast('Added '+added+' track'+(added===1?'':'s')+'.');}else toast('No supported audio files selected.');}
+$('addBtn').onclick=()=>input.click();input.onchange=()=>{addFiles(input.files);input.value='';};
+$('playBtn').onclick=()=>{if(current<0){if(tracks.length)loadTrack(0,true);else{input.click();return;}}else if(audio.paused)audio.play().catch(()=>toast('Tap Play again to start.'));else audio.pause();};
+$('prevBtn').onclick=()=>{if(!tracks.length)return;loadTrack(current<=0?tracks.length-1:current-1,true);};
+$('nextBtn').onclick=()=>nextTrack();
+function nextTrack(){if(!tracks.length)return;let i;if(shuffle&&tracks.length>1){do{i=Math.floor(Math.random()*tracks.length);}while(i===current);}else i=(current+1)%tracks.length;loadTrack(i,true);}
+$('nextBtn').onclick=nextTrack;
+$('shuffleBtn').onclick=()=>{shuffle=!shuffle;$('shuffleBtn').classList.toggle('active',shuffle);toast(shuffle?'Shuffle on':'Shuffle off');};
+$('repeatBtn').onclick=()=>{repeat=!repeat;audio.loop=repeat;$('repeatBtn').classList.toggle('active',repeat);toast(repeat?'Repeat current track on':'Repeat off');};
+$('favoriteBtn').onclick=()=>{if(current>=0)toggleFavorite(tracks[current]);};
+$('volumeBtn').onclick=()=>{$('volume').hidden=!$('volume').hidden;};
+$('volume').oninput=()=>audio.volume=Number($('volume').value);audio.volume=.85;
+$('themeBtn').onclick=()=>{document.body.classList.toggle('light');updateThemeLabel();persistPrefs();};
+$('search').oninput=renderList;
+$('seek').oninput=()=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=(Number($('seek').value)/1000)*audio.duration;};
+audio.ontimeupdate=()=>{if(Number.isFinite(audio.duration)&&audio.duration>0){$('seek').value=Math.round(audio.currentTime/audio.duration*1000);$('currentTime').textContent=fmt(audio.currentTime);$('duration').textContent=fmt(audio.duration);}};
+audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration);};
+audio.onplay=updatePlayer;audio.onpause=updatePlayer;audio.onended=()=>{if(!repeat)nextTrack();};
+$('clearBtn').onclick=()=>{if(!tracks.length)return;if(!confirm('Clear the current music list? You can add the files again.'))return;audio.pause();audio.removeAttribute('src');tracks=[];current=-1;urls.forEach(URL.revokeObjectURL);urls=[];updatePlayer();$('seek').value=0;$('currentTime').textContent='0:00';$('duration').textContent='0:00';};
+document.querySelectorAll('[data-online]').forEach(b=>b.onclick=()=>{const q=encodeURIComponent('music');const url=b.dataset.online==='youtube'?'https://www.youtube.com/results?search_query='+q:'https://soundcloud.com/search?q='+q;window.open(url,'_blank','noopener');});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false;});
+$('installBtn').onclick=async()=>{if(!deferredPrompt){toast('Use your browser menu and choose Install app or Add to Home screen.');return;}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true;};
+loadPrefs();updatePlayer();
+})();
+</script>
+</body>
+</html>
+<script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script>
