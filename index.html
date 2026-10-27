@@ -1,4 +1,57 @@
+function addSubject() {
+  const input = document.getElementById("subjectName");
+  const grid = document.getElementById("subjectGrid");
+  const empty = document.getElementById("emptySubjects");
 
+  if (!input || !grid) {
+    alert("Subject list elements were not found.");
+    return;
+  }
+
+  const name = input.value.trim();
+
+  if (!name) {
+    alert("Please enter a subject name.");
+    input.focus();
+    return;
+  }
+
+  if (!db || !Array.isArray(db.subjects)) {
+    alert("Subject storage is not initialized. Refresh the app.");
+    return;
+  }
+
+  const subject = {
+    id: Date.now().toString(),
+    name: name,
+    notes: [],
+    cards: [],
+    quizzes: []
+  };
+
+  db.subjects.push(subject);
+
+  try {
+    localStorage.setItem(
+      "studyspace_unlimited_v1",
+      JSON.stringify(db)
+    );
+  } catch (error) {
+    db.subjects.pop();
+    alert("Could not save the subject. Check browser storage.");
+    return;
+  }
+
+  input.value = "";
+
+  if (typeof renderSubjects === "function") {
+    renderSubjects();
+  }
+
+  if (empty) {
+    empty.classList.add("hidden");
+  }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
