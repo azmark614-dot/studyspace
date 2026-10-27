@@ -1,4 +1,10 @@
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+</script>
 const CACHE_NAME = "studyspace-offline-v1";
 
 const FILES_TO_CACHE = [
